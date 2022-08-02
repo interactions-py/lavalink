@@ -1,8 +1,7 @@
 from typing import Union, List, Dict
 
-import lavalink
 from interactions import Extension, extension_listener, Storage, OpCodeType, Snowflake, Client
-from lavalink import Client as LavalinkClient
+import lavalink
 
 from .models import VoiceState, VoiceServer
 
@@ -19,7 +18,7 @@ class LavalinkVoice(Extension):
 
     @extension_listener()
     async def on_start(self):
-        self.lavalink_client: LavalinkClient = LavalinkClient(int(self.client.me.id))
+        self.lavalink_client: lavalink.Client = lavalink.Client(int(self.client.me.id))
 
     @extension_listener()
     async def raw_socket_create(self, event: str, data: dict):
