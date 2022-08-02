@@ -25,7 +25,7 @@ voice = client.load("interactions.ext.lavalink")
 
 @client.event()
 async def on_start():
-    voice.lavalink_client.add_node("127.0.0.1", 43421, "your_password", "eu")  # Copy host, port abd password from `application.yml`
+    voice.lavalink_client.add_node("127.0.0.1", 43421, "your_password", "eu")  # Copy host, port and password from `application.yml`
 
 @client.event()
 async def on_voice_state_update(before: VoiceState, after: VoiceState):
