@@ -4,7 +4,7 @@
 
 1. Download Java if you don't have it
 2. Download lavalink from [this repo](https://github.com/freyacodes/Lavalink)
-3. Configure `application.yml` file
+3. Configure `application.yml` file like [here](https://github.com/freyacodes/Lavalink/blob/master/LavalinkServer/application.yml.example)
 4. Download ext via `pip install interactions-lavalink`
 
 ## Usage
