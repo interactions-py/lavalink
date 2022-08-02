@@ -34,7 +34,7 @@ class LavalinkVoice(Extension):
             self._cache.add(model, model.user_id)
         elif event == "VOICE_SERVER_UPDATE":
             model = VoiceServer(**data, _client=self.client._http)
-            self.client._websocket._dispatch.dispatch("on_voice_state_update", model)
+            self.client._websocket._dispatch.dispatch("on_voice_server_update", model)
 
     @extension_listener()
     async def on_raw_voice_server_update(self, data):
