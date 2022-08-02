@@ -79,7 +79,10 @@ class LavalinkVoice(Extension):
         Connects to voice channel and creates player
         """
         await self._connect_voice_channel(guild_id, channel_id, self_deaf, self_mute)
-        return self.lavalink_client.player_manager.create(int(guild_id))
+        player = self.lavalink_client.player_manager.get(int(guild_id))
+        if player is None:
+            player = self.lavalink_client.player_manager.create(int(guild_id))
+        return player
 
     async def disconnect(self, guild_id: Union[Snowflake, int]):
         await self._disconnect_voice_channel(int(guild_id))
