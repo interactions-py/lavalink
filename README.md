@@ -1,1 +1,1 @@
-# python-project-template
+# interactions-lavalink

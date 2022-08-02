@@ -1,1 +1,2 @@
-pre-commit
+discord-py-interactions>=4.3.0
+lavalink
