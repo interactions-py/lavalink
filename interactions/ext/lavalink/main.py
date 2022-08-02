@@ -22,9 +22,7 @@ class LavalinkVoice(Extension):
         self.lavalink_client: LavalinkClient = LavalinkClient(int(self.client.me.id))
 
     @extension_listener()
-    async def raw_socket_create(self, event: str, data: dict = None):
-        if data is None:
-            return
+    async def raw_socket_create(self, event: str, data: dict):
         if event not in ["VOICE_STATE_UPDATE", "VOICE_SERVER_UPDATE"]:
             return
 
