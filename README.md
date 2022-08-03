@@ -12,7 +12,7 @@
 **No way until core devs approve my pr!**
 
 This ext doesn't work on all versions of `discord-py-interactions`.  
-Maybe will work in version `4.3.1` (not released yet)
+Maybe will work in version `4.3.2` (not released yet)
 
 Run lavalink via `java -jar Lavalink.jar` in same folder with `application.yml` file.
 
