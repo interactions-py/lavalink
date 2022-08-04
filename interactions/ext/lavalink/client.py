@@ -85,6 +85,23 @@ class VoiceClient(Client):
         _user_id = Snowflake(user_id) if isinstance(user_id, int) else user_id
         return self._http.cache[VoiceState].get(_user_id)
 
+    def get_guild_voice_states(self, guild_id: Union[Snowflake, int]):
+        """
+        Returns channel voice states.
+
+        :param guild_id: The channel id
+        :type guild_id: Union[Snowflake, int]
+        :return: Founded channel voice states else nothing
+        :rtype: Optional[List[VoiceState]]
+        """
+
+        _guild_id = Snowflake(guild_id) if isinstance(guild_id, int) else guild_id
+        return [
+            voice_state
+            for voice_state in self.voice_states.values()
+            if voice_state.guild_id == _guild_id
+        ]
+
     def get_channel_voice_states(self, channel_id: Union[Snowflake, int]) -> Optional[List[VoiceState]]:
         """
         Returns channel voice states.
