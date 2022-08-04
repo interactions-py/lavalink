@@ -87,7 +87,7 @@ class VoiceClient(Client):
 
     def get_guild_voice_states(self, guild_id: Union[Snowflake, int]):
         """
-        Returns channel voice states.
+        Returns guild voice states.
 
         :param guild_id: The channel id
         :type guild_id: Union[Snowflake, int]
