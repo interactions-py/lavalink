@@ -1,4 +1,4 @@
-from typing import Dict, List, Union
+from typing import Dict, List, Union, Optional
 
 from lavalink import Client as LavalinkClient
 from lavalink import DefaultPlayer
@@ -41,7 +41,18 @@ class VoiceClient(Client):
         self_mute: bool = False,
     ) -> DefaultPlayer:
         """
-        Connects to voice channel and creates player
+        Connects to voice channel and creates player.
+
+        :param guild_id: The guild id to connect.
+        :type guild_id: Union[Snowflake, int, str]
+        :param channel_id: The channel id to connect.
+        :type channel_id: Union[Snowflake, int, str]
+        :param self_deaf: Whether bot is self deafened
+        :type self_deaf: bool
+        :param self_mute: Whether bot is self muted
+        :type self_mute: bool
+        :return: Created guild player.
+        :rtype: DefaultPlayer
         """
         await self._websocket.connect_voice_channel(guild_id, channel_id, self_deaf, self_mute)
         player = self.lavalink_client.player_manager.get(int(guild_id))
@@ -58,16 +69,35 @@ class VoiceClient(Client):
 
     @property
     def voice_states(self) -> Dict[Snowflake, VoiceState]:
+        """Returns dict of cached voice states"""
         return self._http.cache[VoiceState].values
 
-    def get_user_voice_state(self, user_id: Union[Snowflake, int]) -> VoiceState:
-        user_id = Snowflake(user_id) if isinstance(user_id, int) else user_id
-        return self._http.cache[VoiceState].get(user_id)
+    def get_user_voice_state(self, user_id: Union[Snowflake, int]) -> Optional[VoiceState]:
+        """
+        Returns user voice state.
 
-    def get_channel_voice_states(self, channel_id: Union[Snowflake, int]) -> List[VoiceState]:
-        channel_id = Snowflake(channel_id) if isinstance(channel_id, int) else channel_id
+        :param user_id: The user id
+        :type user_id: Union[Snowflake, int]
+        :return: Founded user voice state else nothing
+        :rtype: Optional[VoiceState]
+        """
+
+        _user_id = Snowflake(user_id) if isinstance(user_id, int) else user_id
+        return self._http.cache[VoiceState].get(_user_id)
+
+    def get_channel_voice_states(self, channel_id: Union[Snowflake, int]) -> Optional[List[VoiceState]]:
+        """
+        Returns channel voice states.
+
+        :param channel_id: The channel id
+        :type channel_id: Union[Snowflake, int]
+        :return: Founded channel voice states else nothing
+        :rtype: Optional[List[VoiceState]]
+        """
+
+        _channel_id = Snowflake(channel_id) if isinstance(channel_id, int) else channel_id
         return [
             voice_state
             for voice_state in self.voice_states.values()
-            if voice_state.channel_id == channel_id
+            if voice_state.channel_id == _channel_id
         ]
