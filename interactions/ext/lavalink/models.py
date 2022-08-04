@@ -16,6 +16,7 @@ class VoiceState(ClientSerializerMixin):
     A class object representing the gateway event ``VOICE_STATE_UPDATE``.
     This class creates an object every time the event ``VOICE_STATE_UPDATE`` is received from the discord API.
     It contains information about the user's update voice information.
+
     Attributes:
     -----------
     _json : dict
@@ -69,6 +70,7 @@ class VoiceState(ClientSerializerMixin):
     def joined(self) -> bool:
         """
         Whether the user joined the channel.
+
         :rtype: bool
         """
         return self.channel_id is not None
@@ -76,6 +78,7 @@ class VoiceState(ClientSerializerMixin):
     async def mute_member(self, reason: Optional[str]) -> Member:
         """
         Mutes the current member.
+
         :param reason: The reason of the muting, optional
         :type reason: str
         :return: The modified member object
@@ -86,6 +89,7 @@ class VoiceState(ClientSerializerMixin):
     async def deafen_member(self, reason: Optional[str]) -> Member:
         """
         Deafens the current member.
+
         :param reason: The reason of the deafening, optional
         :type reason: str
         :return: The modified member object
@@ -96,6 +100,7 @@ class VoiceState(ClientSerializerMixin):
     async def move_member(self, channel_id: int, *, reason: Optional[str]) -> Member:
         """
         Moves the member to another channel.
+
         :param channel_id: The ID of the channel to move the user to
         :type channel_id: int
         :param reason: The reason of the move
@@ -110,6 +115,7 @@ class VoiceState(ClientSerializerMixin):
     async def get_channel(self) -> Channel:
         """
         Gets the channel in what the update took place.
+
         :rtype: Channel
         """
         return Channel(**await self._client.get_channel(int(self.channel_id)), _client=self._client)
@@ -117,6 +123,7 @@ class VoiceState(ClientSerializerMixin):
     async def get_guild(self) -> Guild:
         """
         Gets the guild in what the update took place.
+
         :rtype: Guild
         """
         return Guild(**await self._client.get_guild(int(self.channel_id)), _client=self._client)

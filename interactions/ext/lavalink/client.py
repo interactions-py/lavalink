@@ -12,11 +12,6 @@ __all__ = ["VoiceClient"]
 
 
 class VoiceClient(Client):
-    """
-    Client with voice and lavalink support.
-
-    :ivar LavalinkClient lavalink_client: The client of lavalink.
-    """
     def __init__(self, token: str, **kwargs):
         super().__init__(token, **kwargs)
 
