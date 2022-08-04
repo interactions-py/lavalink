@@ -12,6 +12,11 @@ __all__ = ["VoiceClient"]
 
 
 class VoiceClient(Client):
+    """
+    Client with voice and lavalink support.
+
+    :ivar LavalinkClient lavalink_client: The client of lavalink.
+    """
     def __init__(self, token: str, **kwargs):
         super().__init__(token, **kwargs)
 
@@ -65,6 +70,14 @@ class VoiceClient(Client):
         await self.lavalink_client.player_manager.destroy(int(guild_id))
 
     def get_player(self, guild_id: Union[Snowflake, int]) -> DefaultPlayer:
+        """
+        Returns current player in guild.
+
+        :param guild_id: The guild id
+        :type guild_id: Union[Snowflake, int]
+        :return: Guild player
+        :rtype: DefaultPlayer
+        """
         return self.lavalink_client.player_manager.get(int(guild_id))
 
     @property
