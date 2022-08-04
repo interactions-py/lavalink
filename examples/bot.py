@@ -1,10 +1,8 @@
-from interactions import Client, Intents
+from interactions import Intents
+from interactions.ext.lavalink import VoiceClient
 
+client = VoiceClient("TOKEN", intents=Intents.DEFAULT)
 
-client = Client("TOKEN", intents=Intents.DEFAULT)
-
-# Ext should be loaded first than your Extension!
-client.load("interactions.ext.lavalink")
 client.load("exts.music")
 
 client.start()

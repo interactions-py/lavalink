@@ -1,18 +1,15 @@
+import re
 from codecs import open
-from os import path
 
 from setuptools import setup
 
 # Package information
 AUTHOR = "Damego"
-AUTHOR_EMAIL = "danyabatueff@gmail.com"
-DESCRIPTION = "Lavalink for interactions.py"
+AUTHOR_EMAIL = "damego.dev@gmail.com"
+DESCRIPTION = "Lavalink and voice support for interactions.py"
 PROJECT_NAME = "interactions-lavalink"
 MAIN_PACKAGE_NAME = "interactions.ext.lavalink"
 URL = "https://github.com/Damego/interactions-lavalink"
-
-# Other variables
-HERE = path.abspath(path.dirname(__file__))
 
 with open("README.md", "r", encoding="utf-8") as f:
     README = f.read()
@@ -20,10 +17,12 @@ with open("README.md", "r", encoding="utf-8") as f:
 with open("requirements.txt", "r", encoding="utf-8") as f:
     requirements = f.read()
 
+with open("interactions/ext/lavalink/base.py") as fp:
+    VERSION = re.search('__version__ = "([^"]+)"', fp.read())[1]
 
 setup(
     name=PROJECT_NAME,
-    version="0.0.1",
+    version=VERSION,
     author=AUTHOR,
     author_email=AUTHOR_EMAIL,
     description=DESCRIPTION,
