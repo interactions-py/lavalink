@@ -1,8 +1,9 @@
+from datetime import datetime
 from typing import Optional
 
-from datetime import datetime
-from interactions import Member, Snowflake, Guild, Channel
-from interactions.api.models.attrs_utils import define, field, ClientSerializerMixin
+from interactions.api.models.attrs_utils import ClientSerializerMixin, define, field
+
+from interactions import Channel, Guild, Member, Snowflake
 
 __all__ = ["VoiceState", "VoiceServer"]
 

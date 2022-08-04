@@ -1,10 +1,12 @@
-from typing import Union, List, Dict
+from typing import Dict, List, Union
+
+from lavalink import Client as LavalinkClient
+from lavalink import DefaultPlayer
 
 from interactions import Client, Snowflake
-from lavalink import Client as LavalinkClient, DefaultPlayer
 
-from .websocket import VoiceWebSocketClient
 from .models import VoiceState
+from .websocket import VoiceWebSocketClient
 
 __all__ = ["VoiceClient"]
 
@@ -16,8 +18,12 @@ class VoiceClient(Client):
         self._websocket = VoiceWebSocketClient(token, self._intents)
         self.lavalink_client = LavalinkClient(int(self.me.id))
 
-        self._websocket._dispatch.register(self.__raw_voice_state_update, "on_raw_voice_state_update")
-        self._websocket._dispatch.register(self.__raw_voice_server_update, "on_raw_voice_server_update")
+        self._websocket._dispatch.register(
+            self.__raw_voice_state_update, "on_raw_voice_state_update"
+        )
+        self._websocket._dispatch.register(
+            self.__raw_voice_server_update, "on_raw_voice_server_update"
+        )
 
     async def __raw_voice_state_update(self, data: dict):
         lavalink_data = {"t": "VOICE_STATE_UPDATE", "d": data}
@@ -32,7 +38,7 @@ class VoiceClient(Client):
         guild_id: Union[Snowflake, int, str],
         channel_id: Union[Snowflake, int, str],
         self_deaf: bool = False,
-        self_mute: bool = False
+        self_mute: bool = False,
     ) -> DefaultPlayer:
         """
         Connects to voice channel and creates player
@@ -60,4 +66,8 @@ class VoiceClient(Client):
 
     def get_channel_voice_states(self, channel_id: Union[Snowflake, int]) -> List[VoiceState]:
         channel_id = Snowflake(channel_id) if isinstance(channel_id, int) else channel_id
-        return [voice_state for voice_state in self.voice_states.values() if voice_state.channel_id == channel_id]
+        return [
+            voice_state
+            for voice_state in self.voice_states.values()
+            if voice_state.channel_id == channel_id
+        ]

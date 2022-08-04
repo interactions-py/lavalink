@@ -1,5 +1,6 @@
-from interactions import WebSocketClient, Storage, OpCodeType
-from .models import VoiceState, VoiceServer
+from interactions import OpCodeType, Storage, WebSocketClient
+
+from .models import VoiceServer, VoiceState
 
 __all__ = ["VoiceWebSocketClient"]
 
@@ -23,15 +24,17 @@ class VoiceWebSocketClient(WebSocketClient):
             model = VoiceServer(**data, _client=self._http)
             self._dispatch.dispatch("on_voice_server_update", model)
 
-    async def connect_voice_channel(self, guild_id: int, channel_id: int, self_deaf: bool, self_mute: bool):
+    async def connect_voice_channel(
+        self, guild_id: int, channel_id: int, self_deaf: bool, self_mute: bool
+    ):
         payload = {
             "op": OpCodeType.VOICE_STATE,
             "d": {
                 "channel_id": str(channel_id),
                 "guild_id": str(guild_id),
                 "self_deaf": self_deaf,
-                "self_mute": self_mute
-            }
+                "self_mute": self_mute,
+            },
         }
 
         await self._send_packet(payload)
@@ -39,11 +42,7 @@ class VoiceWebSocketClient(WebSocketClient):
     async def disconnect_voice_channel(self, guild_id: int):
         payload = {
             "op": OpCodeType.VOICE_STATE,
-            "d": {
-                "channel_id": None,
-                "guild_id": str(guild_id)
-            }
+            "d": {"channel_id": None, "guild_id": str(guild_id)},
         }
 
         await self._send_packet(payload)
-
