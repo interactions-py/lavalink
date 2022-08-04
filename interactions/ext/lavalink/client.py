@@ -1,4 +1,4 @@
-from typing import Dict, List, Union, Optional
+from typing import Dict, List, Optional, Union
 
 from lavalink import Client as LavalinkClient
 from lavalink import DefaultPlayer
@@ -110,7 +110,9 @@ class VoiceClient(Client):
             if voice_state.guild_id == _guild_id
         ]
 
-    def get_channel_voice_states(self, channel_id: Union[Snowflake, int]) -> Optional[List[VoiceState]]:
+    def get_channel_voice_states(
+        self, channel_id: Union[Snowflake, int]
+    ) -> Optional[List[VoiceState]]:
         """
         Returns channel voice states.
 
