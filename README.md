@@ -41,6 +41,11 @@ client.start()
 
 Example with using `Extension` [here](https://github.com/Damego/interactions-lavalink/tree/main/examples)
 
+## Documentation
+
+[lavalink.py documentation](https://lavalink.readthedocs.io/en/master/)  
+[lavalink.py repository](https://github.com/Devoxin/Lavalink.py)
+
 ## Credits
 
 Thanks EdVraz for `VoiceState` from [voice ext](https://github.com/interactions-py/voice)
