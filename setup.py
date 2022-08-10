@@ -9,7 +9,7 @@ AUTHOR_EMAIL = "damego.dev@gmail.com"
 DESCRIPTION = "Lavalink and voice support for interactions.py"
 PROJECT_NAME = "interactions-lavalink"
 MAIN_PACKAGE_NAME = "interactions.ext.lavalink"
-URL = "https://github.com/Damego/interactions-lavalink"
+URL = "https://github.com/interactions-py/interactions-lavalink"
 
 with open("README.md", "r", encoding="utf-8") as f:
     README = f.read()

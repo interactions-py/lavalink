@@ -8,7 +8,7 @@ version = Version(version=__version__, author=VersionAuthor(name="Damego", email
 base = Base(
     name="interactions-lavalink",
     version=version,
-    link="https://github.com/Damego/interactions-lavalink",
+    link="https://github.com/interactions-py/interactions-lavalink",
     description="Lavalink and voice support for interactions.py",
     packages=["interactions.ext.lavalink"],
     requirements=["discord-py-interactions>=4.3.0", "lavalink"],
