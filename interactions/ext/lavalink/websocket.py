@@ -15,14 +15,14 @@ class VoiceWebSocketClient(WebSocketClient):
 
         self._dispatch.dispatch(f"on_raw_{event.lower()}", data)
         _cache: Storage = self._http.cache[VoiceState]
-        if event == "VOICE_STATE_UPDATE":
+        if event == "VOICE_SERVER_UPDATE":
+            model = VoiceServer(**data, _client=self._http)
+            self._dispatch.dispatch("on_voice_server_update", model)
+        elif event == "VOICE_STATE_UPDATE":
             model = VoiceState(**data, _client=self._http)
             old = _cache.get(model.user_id)
             self._dispatch.dispatch("on_voice_state_update", old, model)
             _cache.add(model, model.user_id)
-        elif event == "VOICE_SERVER_UPDATE":
-            model = VoiceServer(**data, _client=self._http)
-            self._dispatch.dispatch("on_voice_server_update", model)
 
     async def connect_voice_channel(
         self, guild_id: int, channel_id: int, self_deaf: bool, self_mute: bool
