@@ -25,9 +25,7 @@ class VoiceClient(Client):
             self.__raw_voice_server_update, "on_raw_voice_server_update"
         )
 
-        self._websocket._dispatch.register(
-            self.__on_client_start, "on_start"
-        )
+        self._websocket._dispatch.register(self.__on_client_start, "on_start")
 
     async def __on_client_start(self):
         self._websocket._bot_var = self

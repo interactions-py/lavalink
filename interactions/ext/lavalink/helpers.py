@@ -1,6 +1,6 @@
-from typing import Optional, List
+from typing import List, Optional
 
-from interactions import Member, Guild, Channel
+from interactions import Channel, Guild, Member
 
 from .models import VoiceState
 
@@ -28,7 +28,6 @@ def channel_voice_states(self) -> Optional[List[VoiceState]]:
     ]
 
 
-
 Channel.voice_states = channel_voice_states
 
 
@@ -42,7 +41,6 @@ def guild_voice_states(self) -> Optional[List[VoiceState]]:
         for voice_state in self._client.cache[VoiceState].values.values()
         if voice_state.guild_id == self.id
     ]
-
 
 
 Guild.voice_states = guild_voice_states
