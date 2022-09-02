@@ -9,7 +9,7 @@
 
 ## Usage
 
-Run lavalink via `java -jar Lavalink.jar` in same folder with `application.yml` file.  
+Run lavalink via `java -jar Lavalink.jar` in same folder with `application.yml` file.
 Create bot like example and run it.
 
 ```python
@@ -29,12 +29,16 @@ async def on_voice_state_update(before: VoiceState, after: VoiceState):
 @client.command()
 @interactions.option()
 async def play(ctx: interactions.CommandContext, query: str):
-    voice_state = client.get_user_voice_state(ctx.author.id)  # Can be `None` if not cached.
-    player = await client.connect(ctx.guild_id, voice_state.channel_id)
+    await ctx.defer()
+    # NOTE: ctx.author.voice can be None if you runned a bot after joining the voice channel
+    player = await self.client.connect(ctx.author.voice.guild_id, ctx.author.voice.channel_id)
+
     results = await player.node.get_tracks(f"ytsearch:{query}")
-    player.add(requester=int(ctx.author.id), track=results["tracks"][0])
+    track = AudioTrack(results["tracks"][0], int(ctx.author.id))
+    player.add(requester=int(ctx.author.id), track=track)
     await player.play()
 
+    await ctx.send(f"Now playing: `{track.title}`")
 
 client.start()
 ```
@@ -43,7 +47,7 @@ Example with using `Extension` [here](https://github.com/Damego/interactions-lav
 
 ## Documentation
 
-[lavalink.py documentation](https://lavalink.readthedocs.io/en/master/)  
+[lavalink.py documentation](https://lavalink.readthedocs.io/en/master/)
 [lavalink.py repository](https://github.com/Devoxin/Lavalink.py)
 
 ## Credits
