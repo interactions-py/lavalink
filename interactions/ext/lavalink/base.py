@@ -2,9 +2,11 @@ from interactions.ext.base import Base
 from interactions.ext.version import Version, VersionAuthor
 
 __all__ = ["version", "base"]
-__version__ = "0.0.1"
+__version__ = "0.0.2"
 
-version = Version(version=__version__, author=VersionAuthor(name="Damego", email="damego.dev@gmail.com"))
+version = Version(
+    version=__version__, author=VersionAuthor(name="Damego", email="damego.dev@gmail.com")
+)
 base = Base(
     name="interactions-lavalink",
     version=version,
