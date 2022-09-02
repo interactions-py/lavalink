@@ -118,6 +118,9 @@ class VoiceState(ClientSerializerMixin):
 
         :rtype: Channel
         """
+        channel = self._client.cache[Channel].get(self.channel_id)
+        if channel is not None:
+            return channel
         return Channel(**await self._client.get_channel(int(self.channel_id)), _client=self._client)
 
     async def get_guild(self) -> Guild:
@@ -126,6 +129,9 @@ class VoiceState(ClientSerializerMixin):
 
         :rtype: Guild
         """
+        guild = self._client.cache[Guild].get(self.channel_id)
+        if guild is not None:
+            return guild
         return Guild(**await self._client.get_guild(int(self.channel_id)), _client=self._client)
 
 
@@ -145,4 +151,7 @@ class VoiceServer(ClientSerializerMixin):
         Gets the guild in what the update took place.
         :rtype: Guild
         """
+        guild = self._client.cache[Guild].get(self.channel_id)
+        if guild is not None:
+            return guild
         return Guild(**await self._client.get_guild(int(self.channel_id)), _client=self._client)
