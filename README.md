@@ -79,6 +79,34 @@ class Music(interactions.Extension):
     async def leave(self, ctx: interactions.CommandContext):
         await self.client.disconnect(ctx.guild_id)
 ```
+
+## Events
+To listen lavalink event you have to use `@listener` decorator.
+
+```python
+import lavalink
+from interactions.ext.lavalink import listener
+
+
+# NOTE: Works only in extensions.
+class MusicExt(Extension):
+    ...
+
+    # There are most useful events for you. You can use other events if you want it.
+    @listener()
+    async def on_track_start(self, event: lavalink.TrackStartEvent):
+        """Fires when track starts"""
+
+    @listener()
+    async def on_track_end(self, event: lavalink.TrackEndEvent):
+        """Fires when track ends"""
+
+    @listener()
+    async def on_queue_end(self, event: lavalink.QueueEndEvent):
+        """Fires when queue ends"""
+
+```
+
 ## New methods/properties for interactions.py library
 
 `Member.voice` - returns current member's `VoiceState`. It can be `None` if not cached.  
