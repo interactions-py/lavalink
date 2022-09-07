@@ -1,12 +1,12 @@
 from typing import Dict, List, Optional, Union
 
 from lavalink import Client as LavalinkClient
-from lavalink import DefaultPlayer
 
-from interactions import Client, Snowflake
+from interactions import Client, Snowflake, LibraryException
 
 from .models import VoiceState
 from .websocket import VoiceWebSocketClient
+from .player import Player
 
 __all__ = ["VoiceClient"]
 
@@ -16,7 +16,7 @@ class VoiceClient(Client):
         super().__init__(token, **kwargs)
 
         self._websocket = VoiceWebSocketClient(token, self._intents)
-        self.lavalink_client = LavalinkClient(int(self.me.id))
+        self.lavalink_client = LavalinkClient(int(self.me.id), player=Player)
 
         self._websocket._dispatch.register(
             self.__raw_voice_state_update, "on_raw_voice_state_update"
@@ -42,7 +42,7 @@ class VoiceClient(Client):
         channel_id: Union[Snowflake, int, str],
         self_deaf: bool = False,
         self_mute: bool = False,
-    ) -> DefaultPlayer:
+    ) -> Player:
         """
         Connects to voice channel and creates player.
 
@@ -55,8 +55,14 @@ class VoiceClient(Client):
         :param self_mute: Whether bot is self muted
         :type self_mute: bool
         :return: Created guild player.
-        :rtype: DefaultPlayer
+        :rtype: Player
         """
+        #  Discord will fire INVALID_SESSION if channel_id is None
+        if guild_id is None:
+            raise LibraryException(message="Missed requirement argument: guild_id")
+        if channel_id is None:
+            raise LibraryException(message="Missed requirement argument: channel_id")
+
         await self._websocket.connect_voice_channel(guild_id, channel_id, self_deaf, self_mute)
         player = self.lavalink_client.player_manager.get(int(guild_id))
         if player is None:
@@ -64,17 +70,20 @@ class VoiceClient(Client):
         return player
 
     async def disconnect(self, guild_id: Union[Snowflake, int]):
+        if guild_id is None:
+            raise LibraryException(message="Missed requirement argument: guild_id")
+
         await self._websocket.disconnect_voice_channel(int(guild_id))
         await self.lavalink_client.player_manager.destroy(int(guild_id))
 
-    def get_player(self, guild_id: Union[Snowflake, int]) -> DefaultPlayer:
+    def get_player(self, guild_id: Union[Snowflake, int]) -> Player:
         """
         Returns current player in guild.
 
         :param guild_id: The guild id
         :type guild_id: Union[Snowflake, int]
         :return: Guild player
-        :rtype: DefaultPlayer
+        :rtype: Player
         """
         return self.lavalink_client.player_manager.get(int(guild_id))
 
