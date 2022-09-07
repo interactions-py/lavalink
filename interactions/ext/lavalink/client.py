@@ -8,7 +8,7 @@ from .models import VoiceState
 from .player import Player
 from .websocket import VoiceWebSocketClient
 
-__all__ = ["VoiceClient"]
+__all__ = ["VoiceClient", "listener"]
 
 
 class VoiceClient(Client):
