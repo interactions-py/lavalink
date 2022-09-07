@@ -1,6 +1,6 @@
 from typing import List
 
-from lavalink import DefaultPlayer, AudioTrack
+from lavalink import AudioTrack, DefaultPlayer
 
 
 class Player(DefaultPlayer):

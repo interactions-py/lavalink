@@ -2,11 +2,11 @@ from typing import Dict, List, Optional, Union
 
 from lavalink import Client as LavalinkClient
 
-from interactions import Client, Snowflake, LibraryException
+from interactions import Client, LibraryException, Snowflake
 
 from .models import VoiceState
-from .websocket import VoiceWebSocketClient
 from .player import Player
+from .websocket import VoiceWebSocketClient
 
 __all__ = ["VoiceClient"]
 
@@ -140,3 +140,34 @@ class VoiceClient(Client):
             for voice_state in self.voice_states.values()
             if voice_state.channel_id == _channel_id
         ]
+
+    def __register_lavalink_listeners(self):
+        for extension in self._extensions.values():
+            funcs = dir(extension)
+            for _func in funcs:
+                if _func.startswith("__") and _func.endswith("__"):
+                    continue
+                func = getattr(extension, _func)
+                if hasattr(func, "__lavalink__"):
+                    name = func.__lavalink__
+                    if name not in self.lavalink_client._event_hooks:
+                        self.lavalink_client._event_hooks[name] = []
+                    self.lavalink_client._event_hooks[name].append(func)
+
+    async def _ready(self) -> None:
+        self.__register_lavalink_listeners()
+
+        await super()._ready()
+
+
+def listener(func=None, *, name: str = None):
+    def wrapper(func):
+        _name = name or func.__name__
+        _name = _name[3:]
+        event_name = "".join(word.capitalize() for word in _name.split("_")) + "Event"
+        func.__lavalink__ = event_name
+        return func
+
+    if func is not None:
+        return wrapper(func)
+    return wrapper
