@@ -18,11 +18,13 @@ import interactions
 from interactions.ext.lavalink import VoiceState, VoiceClient
 
 client = VoiceClient(...)
-...
+
+client.load("exts.music")
+
 client.start()
 ```
 
-Extension file:
+Extension file: `exts/music.py`
 ```python
 import interactions
 from interactions.ext.lavalink import VoiceClient, VoiceState, listener
