@@ -1,6 +1,5 @@
 import interactions
 from interactions.ext.lavalink import VoiceClient, VoiceState
-from lavalink import AudioTrack
 
 class Music(interactions.Extension):
     def __init__(self, client):
@@ -26,10 +25,14 @@ class Music(interactions.Extension):
         await ctx.defer()
 
         # NOTE: ctx.author.voice can be None if you runned a bot after joining the voice channel
-        player = await self.client.connect(ctx.author.voice.guild_id, ctx.author.voice.channel_id)
+        voice = ctx.author.voice
+        if not voice or not voice.joined:
+            return await ctx.send("You're not connected to the voice channel!")
 
-        results = await player.node.get_tracks(f"ytsearch:{query}")
-        track = AudioTrack(results["tracks"][0], int(ctx.author.id))
+        player = await self.client.connect(voice.guild_id, voice.channel_id)
+        tracks = await player.search_youtube(query)
+
+        track = tracks[0]
         player.add(requester=int(ctx.author.id), track=track)
         await player.play()
 
