@@ -2,6 +2,8 @@ from typing import List
 
 from lavalink import AudioTrack, DefaultPlayer
 
+__all__ = ["Player"]
+
 
 class Player(DefaultPlayer):
     async def search_youtube(self, query: str) -> List[AudioTrack]:
