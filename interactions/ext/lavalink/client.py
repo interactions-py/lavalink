@@ -1,3 +1,4 @@
+from inspect import getmembers
 from typing import Dict, List, Optional, Union
 
 from lavalink import Client as LavalinkClient
@@ -25,7 +26,7 @@ class VoiceClient(Client):
             self.__raw_voice_server_update, "on_raw_voice_server_update"
         )
 
-        self._websocket._bot_var = self
+        self._websocket._http._bot_var = self
         self._http._bot_var = self
 
     async def __raw_voice_state_update(self, data: dict):
@@ -105,7 +106,7 @@ class VoiceClient(Client):
         _user_id = Snowflake(user_id) if isinstance(user_id, int) else user_id
         return self._http.cache[VoiceState].get(_user_id)
 
-    def get_guild_voice_states(self, guild_id: Union[Snowflake, int]):
+    def get_guild_voice_states(self, guild_id: Union[Snowflake, int]) -> Optional[List[VoiceState]]:
         """
         Returns guild voice states.
 
@@ -143,29 +144,23 @@ class VoiceClient(Client):
 
     def __register_lavalink_listeners(self):
         for extension in self._extensions.values():
-            funcs = dir(extension)
-            for _func in funcs:
-                if _func.startswith("__") and _func.endswith("__"):
-                    continue
-                func = getattr(extension, _func)
+            for name, func in getmembers(extension):
                 if hasattr(func, "__lavalink__"):
-                    name = func.__lavalink__
-                    if name not in self.lavalink_client._event_hooks:
-                        self.lavalink_client._event_hooks[name] = []
-                    self.lavalink_client._event_hooks[name].append(func)
+                    name = func.__lavalink__[3:]
+                    event_name = "".join(word.capitalize() for word in name.split("_")) + "Event"
+                    if event_name not in self.lavalink_client._event_hooks:
+                        self.lavalink_client._event_hooks[event_name] = []
+                    self.lavalink_client._event_hooks[event_name].append(func)
 
     async def _ready(self) -> None:
         self.__register_lavalink_listeners()
-
         await super()._ready()
 
 
 def listener(func=None, *, name: str = None):
     def wrapper(func):
         _name = name or func.__name__
-        _name = _name[3:]
-        event_name = "".join(word.capitalize() for word in _name.split("_")) + "Event"
-        func.__lavalink__ = event_name
+        func.__lavalink__ = _name
         return func
 
     if func is not None:
