@@ -137,7 +137,7 @@ class VoiceState(ClientSerializerMixin):
             return guild
         return Guild(**await self._client.get_guild(int(self.guild_id)), _client=self._client)
 
-    async def connect(self, self_deaf: bool = False, self_mute: bool = False) -> Player:
+    async def connect(self, self_deaf: bool = False, self_mute: bool = False) -> "Player":
         if not self.channel_id:
             raise LibraryException(message="User not connected to the voice channel!")
 

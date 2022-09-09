@@ -53,3 +53,4 @@ def player(self) -> Optional[Player]:
 
 
 Guild.voice_states = guild_voice_states
+Guild.player = player
