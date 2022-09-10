@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 from interactions.api.models.attrs_utils import ClientSerializerMixin, define, field
 

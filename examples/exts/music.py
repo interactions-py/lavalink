@@ -1,5 +1,5 @@
 import interactions
-from interactions.ext.lavalink import VoiceClient, VoiceState, Player
+from interactions.ext.lavalink import Player, VoiceClient, VoiceState
 
 
 class Music(interactions.Extension):
