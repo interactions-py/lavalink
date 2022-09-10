@@ -27,10 +27,7 @@ setup(
     author_email=AUTHOR_EMAIL,
     description=DESCRIPTION,
     include_package_data=True,
-    install_requires=[
-        "discord-py-interactions>=4.3.0",
-        "lavalink~=4.0.1"
-    ],
+    install_requires=["discord-py-interactions>=4.3.0, <4.3.2", "lavalink~=4.0.1"],
     license="GPL-3.0 License",
     long_description=README,
     long_description_content_type="text/markdown",

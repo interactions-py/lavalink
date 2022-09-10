@@ -1,14 +1,15 @@
+from inspect import getmembers
 from typing import Dict, List, Optional, Union
 
 from lavalink import Client as LavalinkClient
-from lavalink import DefaultPlayer
 
-from interactions import Client, Snowflake
+from interactions import Client, LibraryException, Snowflake
 
 from .models import VoiceState
+from .player import Player
 from .websocket import VoiceWebSocketClient
 
-__all__ = ["VoiceClient"]
+__all__ = ["VoiceClient", "listener"]
 
 
 class VoiceClient(Client):
@@ -16,7 +17,7 @@ class VoiceClient(Client):
         super().__init__(token, **kwargs)
 
         self._websocket = VoiceWebSocketClient(token, self._intents)
-        self.lavalink_client = LavalinkClient(int(self.me.id))
+        self.lavalink_client = LavalinkClient(int(self.me.id), player=Player)
 
         self._websocket._dispatch.register(
             self.__raw_voice_state_update, "on_raw_voice_state_update"
@@ -25,7 +26,7 @@ class VoiceClient(Client):
             self.__raw_voice_server_update, "on_raw_voice_server_update"
         )
 
-        self._websocket._bot_var = self
+        self._websocket._http._bot_var = self
         self._http._bot_var = self
 
     async def __raw_voice_state_update(self, data: dict):
@@ -42,7 +43,7 @@ class VoiceClient(Client):
         channel_id: Union[Snowflake, int, str],
         self_deaf: bool = False,
         self_mute: bool = False,
-    ) -> DefaultPlayer:
+    ) -> Player:
         """
         Connects to voice channel and creates player.
 
@@ -55,8 +56,14 @@ class VoiceClient(Client):
         :param self_mute: Whether bot is self muted
         :type self_mute: bool
         :return: Created guild player.
-        :rtype: DefaultPlayer
+        :rtype: Player
         """
+        #  Discord will fire INVALID_SESSION if channel_id is None
+        if guild_id is None:
+            raise LibraryException(message="Missed requirement argument: guild_id")
+        if channel_id is None:
+            raise LibraryException(message="Missed requirement argument: channel_id")
+
         await self._websocket.connect_voice_channel(guild_id, channel_id, self_deaf, self_mute)
         player = self.lavalink_client.player_manager.get(int(guild_id))
         if player is None:
@@ -64,17 +71,20 @@ class VoiceClient(Client):
         return player
 
     async def disconnect(self, guild_id: Union[Snowflake, int]):
+        if guild_id is None:
+            raise LibraryException(message="Missed requirement argument: guild_id")
+
         await self._websocket.disconnect_voice_channel(int(guild_id))
         await self.lavalink_client.player_manager.destroy(int(guild_id))
 
-    def get_player(self, guild_id: Union[Snowflake, int]) -> DefaultPlayer:
+    def get_player(self, guild_id: Union[Snowflake, int]) -> Player:
         """
         Returns current player in guild.
 
         :param guild_id: The guild id
         :type guild_id: Union[Snowflake, int]
         :return: Guild player
-        :rtype: DefaultPlayer
+        :rtype: Player
         """
         return self.lavalink_client.player_manager.get(int(guild_id))
 
@@ -96,7 +106,7 @@ class VoiceClient(Client):
         _user_id = Snowflake(user_id) if isinstance(user_id, int) else user_id
         return self._http.cache[VoiceState].get(_user_id)
 
-    def get_guild_voice_states(self, guild_id: Union[Snowflake, int]):
+    def get_guild_voice_states(self, guild_id: Union[Snowflake, int]) -> Optional[List[VoiceState]]:
         """
         Returns guild voice states.
 
@@ -131,3 +141,28 @@ class VoiceClient(Client):
             for voice_state in self.voice_states.values()
             if voice_state.channel_id == _channel_id
         ]
+
+    def __register_lavalink_listeners(self):
+        for extension in self._extensions.values():
+            for name, func in getmembers(extension):
+                if hasattr(func, "__lavalink__"):
+                    name = func.__lavalink__[3:]
+                    event_name = "".join(word.capitalize() for word in name.split("_")) + "Event"
+                    if event_name not in self.lavalink_client._event_hooks:
+                        self.lavalink_client._event_hooks[event_name] = []
+                    self.lavalink_client._event_hooks[event_name].append(func)
+
+    async def _ready(self) -> None:
+        self.__register_lavalink_listeners()
+        await super()._ready()
+
+
+def listener(func=None, *, name: str = None):
+    def wrapper(func):
+        _name = name or func.__name__
+        func.__lavalink__ = _name
+        return func
+
+    if func is not None:
+        return wrapper(func)
+    return wrapper

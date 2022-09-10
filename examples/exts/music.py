@@ -1,6 +1,6 @@
 import interactions
-from interactions.ext.lavalink import VoiceClient, VoiceState
-from lavalink import AudioTrack
+from interactions.ext.lavalink import Player, VoiceClient, VoiceState
+
 
 class Music(interactions.Extension):
     def __init__(self, client):
@@ -25,14 +25,22 @@ class Music(interactions.Extension):
     async def play(self, ctx: interactions.CommandContext, query: str):
         await ctx.defer()
 
-        # NOTE: ctx.author.voice can be None if you runned a bot after joining the voice channel
-        player = await self.client.connect(ctx.author.voice.guild_id, ctx.author.voice.channel_id)
+        # NOTE: ctx.author.voice can be None if you ran a bot after joining the voice channel
+        voice: VoiceState = ctx.author.voice
+        if not voice or not voice.joined:
+            return await ctx.send("You're not connected to the voice channel!")
 
-        results = await player.node.get_tracks(f"ytsearch:{query}")
-        track = AudioTrack(results["tracks"][0], int(ctx.author.id))
+        player: Player  # Typehint player variable to see their methods
+        if (player := ctx.guild.player) is None:
+            player = await voice.connect()
+
+        tracks = await player.search_youtube(query)
+        track = tracks[0]
         player.add(requester=int(ctx.author.id), track=track)
-        await player.play()
 
+        if player.is_playing:
+            return await ctx.send(f"Added to queue: `{track.title}`")
+        await player.play()
         await ctx.send(f"Now playing: `{track.title}`")
 
     @interactions.extension_command()

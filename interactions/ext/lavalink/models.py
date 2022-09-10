@@ -1,9 +1,12 @@
 from datetime import datetime
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
 from interactions.api.models.attrs_utils import ClientSerializerMixin, define, field
 
-from interactions import Channel, Guild, Member, Snowflake
+from interactions import Channel, Guild, LibraryException, Member, Snowflake
+
+if TYPE_CHECKING:
+    from .player import Player
 
 __all__ = ["VoiceState", "VoiceServer"]
 
@@ -133,6 +136,18 @@ class VoiceState(ClientSerializerMixin):
         if guild is not None:
             return guild
         return Guild(**await self._client.get_guild(int(self.guild_id)), _client=self._client)
+
+    async def connect(self, self_deaf: bool = False, self_mute: bool = False) -> "Player":
+        if not self.channel_id:
+            raise LibraryException(message="User not connected to the voice channel!")
+
+        await self._client._bot_var._websocket.connect_voice_channel(
+            self.guild_id, self.channel_id, self_deaf, self_mute
+        )
+        player = self._client._bot_var.lavalink_client.player_manager.get(int(self.guild_id))
+        if player is None:
+            player = self._client._bot_var.lavalink_client.player_manager.create(int(self.guild_id))
+        return player
 
 
 @define()

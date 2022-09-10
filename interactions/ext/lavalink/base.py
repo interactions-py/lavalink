@@ -2,7 +2,7 @@ from interactions.ext.base import Base
 from interactions.ext.version import Version, VersionAuthor
 
 __all__ = ["version", "base"]
-__version__ = "0.0.3"
+__version__ = "0.1.0"
 
 version = Version(
     version=__version__, author=VersionAuthor(name="Damego", email="damego.dev@gmail.com")
