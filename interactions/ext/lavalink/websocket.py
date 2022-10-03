@@ -29,8 +29,8 @@ class VoiceWebSocketClient(WebSocketClient):
         self,
         guild_id: int,
         channel_id: int = None,
-        self_deaf: bool = False,
-        self_mute: bool = False,
+        self_deaf: bool = None,
+        self_mute: bool = None,
     ):
         """
         Sends VOICE_STATE packet to websocket.
@@ -46,9 +46,11 @@ class VoiceWebSocketClient(WebSocketClient):
             "d": {
                 "guild_id": str(guild_id),
                 "channel_id": str(channel_id) if channel_id is not None else None,
-                "self_deaf": self_deaf,
-                "self_mute": self_mute,
             },
         }
+        if self_deaf is not None:
+            payload["d"]["self_deaf"] = self_deaf
+        if self_mute is not None:
+            payload["d"]["self_mute"] = self_mute
 
         await self._send_packet(payload)
