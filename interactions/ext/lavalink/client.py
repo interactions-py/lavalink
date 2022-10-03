@@ -3,7 +3,7 @@ from typing import Dict, List, Optional, Union
 
 from lavalink import Client as LavalinkClient
 
-from interactions import Client, LibraryException, Snowflake
+from interactions import Client, Snowflake
 
 from .models import VoiceState
 from .player import Player
@@ -58,13 +58,12 @@ class VoiceClient(Client):
         :return: Created guild player.
         :rtype: Player
         """
-        #  Discord will fire INVALID_SESSION if channel_id is None
         if guild_id is None:
-            raise LibraryException(message="Missed requirement argument: guild_id")
+            raise TypeError("guild_id cannot be NoneType")
         if channel_id is None:
-            raise LibraryException(message="Missed requirement argument: channel_id")
+            raise TypeError("channel_id cannot be NoneType for connect method")
 
-        await self._websocket.connect_voice_channel(guild_id, channel_id, self_deaf, self_mute)
+        await self._websocket.update_voice_state(guild_id, channel_id, self_deaf, self_mute)
         player = self.lavalink_client.player_manager.get(int(guild_id))
         if player is None:
             player = self.lavalink_client.player_manager.create(int(guild_id))
@@ -72,9 +71,9 @@ class VoiceClient(Client):
 
     async def disconnect(self, guild_id: Union[Snowflake, int]):
         if guild_id is None:
-            raise LibraryException(message="Missed requirement argument: guild_id")
+            raise TypeError("guild_id cannot be NoneType")
 
-        await self._websocket.disconnect_voice_channel(int(guild_id))
+        await self._websocket.update_voice_state(int(guild_id))
         await self.lavalink_client.player_manager.destroy(int(guild_id))
 
     def get_player(self, guild_id: Union[Snowflake, int]) -> Player:
