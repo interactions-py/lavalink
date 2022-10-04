@@ -27,6 +27,7 @@ class VoiceClient(Client):
         )
 
     async def _login(self) -> None:
+        self._http._bot_var = self
         self.lavalink_client = LavalinkClient(int(self.me.id), player=Player)
 
         await super()._login()
