@@ -1,2 +1,2 @@
-discord-py-interactions>=4.3.0, <4.3.2
+discord-py-interactions>=4.3.2
 lavalink~=4.0.1

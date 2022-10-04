@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 
-from interactions.api.models.attrs_utils import ClientSerializerMixin, define, field
+from interactions.utils.attrs_utils import ClientSerializerMixin, define, field
 
 from interactions import Channel, Guild, LibraryException, Member, Snowflake
 
@@ -20,37 +20,19 @@ class VoiceState(ClientSerializerMixin):
     This class creates an object every time the event ``VOICE_STATE_UPDATE`` is received from the discord API.
     It contains information about the user's update voice information.
 
-    Attributes:
-    -----------
-    _json : dict
-        All data of the object stored as dictionary
-    member : Member
-        The member whose VoiceState was updated
-    user_id : int
-        The id of the user whose VoiceState was updated. This is technically the same as the "member id",
-        but it is called `user_id` because of API terminology.
-    suppress : bool
-        Whether the user is muted by the current user(-> bot)
-    session_id : int
-        The id of the session
-    self_video : bool
-        Whether the user's camera is enabled.
-    self_mute : bool
-        Whether the user is muted by themselves
-    self_deaf : bool
-        Whether the user is deafened by themselves
-    self_stream : bool
-        Whether the user is streaming in the current channel
-    request_to_speak_timestamp : datetime
-        Only for stage-channels; when the user requested permissions to speak in the stage channel
-    mute : bool
-        Whether the user's microphone is muted by the server
-    guild_id : int
-        The id of the guild in what the update took action
-    deaf : bool
-        Whether the user is deafened by the guild
-    channel_id : int
-        The id of the channel the update took action
+    :ivar Member member: The member whose VoiceState was updated
+    :ivar int user_id: The id of the user whose VoiceState was updated.
+    :ivar bool suppress: Whether the user is muted by the current user(-> bot)
+    :ivar int session_id: The id of the session
+    :ivar bool self_video: Whether the user's camera is enabled.
+    :ivar bool self_mute: Whether the user is muted by themselves
+    :ivar bool self_deaf: Whether the user is deafened by themselves
+    :ivar bool self_stream: Whether the user is streaming in the current channel
+    :ivar datetime request_to_speak_timestamp: Only for stage-channels; when the user requested permissions to speak in the stage channel
+    :ivar bool mute: Whether the user's microphone is muted by the server
+    :ivar int guild_id: The id of the guild in what the update took action
+    :ivar bool deaf: Whether the user is deafened by the guild
+    :ivar int channel_id: The id of the channel the update took action
     """
 
     guild_id: Optional[Snowflake] = field(converter=Snowflake, default=None)
@@ -78,7 +60,7 @@ class VoiceState(ClientSerializerMixin):
         """
         return self.channel_id is not None
 
-    async def mute_member(self, reason: Optional[str]) -> Member:
+    async def mute_member(self, reason: Optional[str] = None) -> Member:
         """
         Mutes the current member.
 
@@ -89,7 +71,7 @@ class VoiceState(ClientSerializerMixin):
         """
         return await self.member.modify(guild_id=int(self.guild_id), mute=True, reason=reason)
 
-    async def deafen_member(self, reason: Optional[str]) -> Member:
+    async def deafen_member(self, reason: Optional[str] = None) -> Member:
         """
         Deafens the current member.
 
@@ -100,7 +82,7 @@ class VoiceState(ClientSerializerMixin):
         """
         return await self.member.modify(guild_id=int(self.guild_id), deaf=True, reason=reason)
 
-    async def move_member(self, channel_id: int, *, reason: Optional[str]) -> Member:
+    async def move_member(self, channel_id: int, *, reason: Optional[str] = None) -> Member:
         """
         Moves the member to another channel.
 
@@ -141,7 +123,7 @@ class VoiceState(ClientSerializerMixin):
         if not self.channel_id:
             raise LibraryException(message="User not connected to the voice channel!")
 
-        await self._client._bot_var._websocket.connect_voice_channel(
+        await self._client._bot_var._websocket.update_voice_state(
             self.guild_id, self.channel_id, self_deaf, self_mute
         )
         player = self._client._bot_var.lavalink_client.player_manager.get(int(self.guild_id))
@@ -154,7 +136,10 @@ class VoiceState(ClientSerializerMixin):
 class VoiceServer(ClientSerializerMixin):
     """
     A class object representing the gateway event ``VOICE_SERVER_UPDATE``.
-    This class creates an object every time the event ``VOICE_SERVER_UPDATE`` is received from the discord API.
+
+    :ivar str endpoint: Voice connection token
+    :ivar Snowflake guild_id: Guild this voice server update is for
+    :ivar str token: Voice server host
     """
 
     endpoint: str = field()
