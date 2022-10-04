@@ -14,9 +14,6 @@ URL = "https://github.com/interactions-py/interactions-lavalink"
 with open("README.md", "r", encoding="utf-8") as f:
     README = f.read()
 
-# with open("requirements.txt", "r", encoding="utf-8") as f:
-#     requirements = f.read()
-
 with open("interactions/ext/lavalink/base.py") as fp:
     VERSION = re.search('__version__ = "([^"]+)"', fp.read())[1]
 
@@ -27,7 +24,7 @@ setup(
     author_email=AUTHOR_EMAIL,
     description=DESCRIPTION,
     include_package_data=True,
-    install_requires=["discord-py-interactions>=4.3.0, <4.3.2", "lavalink~=4.0.1"],
+    install_requires=["discord-py-interactions>=4.3.2", "lavalink~=4.0.1"],
     license="GPL-3.0 License",
     long_description=README,
     long_description_content_type="text/markdown",
