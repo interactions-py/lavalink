@@ -26,13 +26,11 @@ class VoiceClient(Client):
             self.__raw_voice_server_update, "on_raw_voice_server_update"
         )
 
-    async def _ready(self) -> None:
-        self.__register_lavalink_listeners()
-        await super()._ready()
-
     async def _login(self) -> None:
         self._http._bot_var = self
         self.lavalink_client = LavalinkClient(int(self.me.id), player=Player)
+
+        self.__register_lavalink_listeners()
 
         await super()._login()
 
