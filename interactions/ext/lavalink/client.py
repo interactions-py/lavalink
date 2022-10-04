@@ -139,12 +139,14 @@ class VoiceClient(Client):
     def __register_lavalink_listeners(self):
         for extension in self._extensions.values():
             for name, func in getmembers(extension):
-                if hasattr(func, "__lavalink__"):
-                    name = func.__lavalink__[3:]
-                    event_name = "".join(word.capitalize() for word in name.split("_")) + "Event"
-                    if event_name not in self.lavalink_client._event_hooks:
-                        self.lavalink_client._event_hooks[event_name] = []
-                    self.lavalink_client._event_hooks[event_name].append(func)
+                if not hasattr(func, "__lavalink__"):
+                    continue
+                name = func.__lavalink__[3:]
+                event_name = "".join(word.capitalize() for word in name.split("_")) + "Event"
+                event_hooks = self.lavalink_client._event_hooks
+                if event_name not in event_hooks:
+                    event_hooks[event_name] = []
+                event_hooks[event_name].append(func)
 
     async def _ready(self) -> None:
         self.__register_lavalink_listeners()
