@@ -5,14 +5,14 @@ from interactions import OpCodeType, Storage, WebSocketClient, HTTPClient
 from .models import VoiceServer, VoiceState
 
 if TYPE_CHECKING:
-    from interactions import Client
+    from .client import VoiceClient
 
 __all__ = ["VoiceWebSocketClient"]
 
 
 class VoiceWebSocketClient(WebSocketClient):
-    def __init__(self, bot_var: Client, *args):
-        self._bot_var: Client = bot_var
+    def __init__(self, bot_var: "VoiceClient", *args):
+        self._bot_var: "VoiceClient" = bot_var
         super().__init__(*args)
 
     async def run(self) -> None:
