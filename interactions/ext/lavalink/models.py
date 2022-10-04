@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 
-from interactions.api.models.attrs_utils import ClientSerializerMixin, define, field
+from interactions.utils.attrs_utils import ClientSerializerMixin, define, field
 
 from interactions import Channel, Guild, LibraryException, Member, Snowflake
 
