@@ -16,8 +16,8 @@ class VoiceClient(Client):
     def __init__(self, token: str, **kwargs):
         super().__init__(token, **kwargs)
 
-        self._websocket = VoiceWebSocketClient(token, self._intents)
-        self.lavalink_client = LavalinkClient(int(self.me.id), player=Player)
+        self._websocket = VoiceWebSocketClient(self, token, self._intents)
+        self.lavalink_client: LavalinkClient = None
 
         self._websocket._dispatch.register(
             self.__raw_voice_state_update, "on_raw_voice_state_update"
@@ -26,8 +26,10 @@ class VoiceClient(Client):
             self.__raw_voice_server_update, "on_raw_voice_server_update"
         )
 
-        self._websocket._http._bot_var = self
-        self._http._bot_var = self
+    async def _login(self) -> None:
+        self.lavalink_client = LavalinkClient(int(self.me.id), player=Player)
+
+        await super()._login()
 
     async def __raw_voice_state_update(self, data: dict):
         lavalink_data = {"t": "VOICE_STATE_UPDATE", "d": data}

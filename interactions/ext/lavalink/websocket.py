@@ -1,13 +1,30 @@
-from interactions import OpCodeType, Storage, WebSocketClient
+from typing import TYPE_CHECKING
+
+from interactions import OpCodeType, Storage, WebSocketClient, HTTPClient
 
 from .models import VoiceServer, VoiceState
+
+if TYPE_CHECKING:
+    from interactions import Client
 
 __all__ = ["VoiceWebSocketClient"]
 
 
 class VoiceWebSocketClient(WebSocketClient):
-    def __init__(self, *args):
+    def __init__(self, bot_var: Client, *args):
+        self._bot_var: Client = bot_var
         super().__init__(*args)
+
+    async def run(self) -> None:
+        """
+        Handles the client's connection with the Gateway.
+        """
+
+        if isinstance(self._http, str):
+            self._http = HTTPClient(self._http)
+            self._http._bot_var = self._bot_var
+
+        await super().run()
 
     def _dispatch_event(self, event: str, data: dict) -> None:
         if event not in ("VOICE_STATE_UPDATE", "VOICE_SERVER_UPDATE"):
