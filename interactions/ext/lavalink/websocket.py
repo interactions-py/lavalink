@@ -27,6 +27,12 @@ class VoiceWebSocketClient(WebSocketClient):
         await super().run()
 
     def _dispatch_event(self, event: str, data: dict) -> None:
+        """
+        Dispatches VOICE_STATE_UPDATE and VOICE_SERVER_UPDATE events from the Gateway.
+
+        :param str event: The name of the event.
+        :param dict data: The data for the event.
+        """
         if event not in ("VOICE_STATE_UPDATE", "VOICE_SERVER_UPDATE"):
             return super()._dispatch_event(event, data)
 

@@ -50,14 +50,10 @@ class VoiceClient(Client):
         """
         Connects to voice channel and creates player.
 
-        :param guild_id: The guild id to connect.
-        :type guild_id: Union[Snowflake, int, str]
-        :param channel_id: The channel id to connect.
-        :type channel_id: Union[Snowflake, int, str]
-        :param self_deaf: Whether bot is self deafened
-        :type self_deaf: bool
-        :param self_mute: Whether bot is self muted
-        :type self_mute: bool
+        :param Union[Snowflake, int, str] guild_id: The guild id to connect.
+        :param Union[Snowflake, int, str] channel_id: The channel id to connect.
+        :param bool self_deaf: Whether bot is self deafened
+        :param bool self_mute: Whether bot is self muted
         :return: Created guild player.
         :rtype: Player
         """
@@ -83,8 +79,7 @@ class VoiceClient(Client):
         """
         Returns current player in guild.
 
-        :param guild_id: The guild id
-        :type guild_id: Union[Snowflake, int]
+        :param Union[Snowflake, int] guild_id: The guild id
         :return: Guild player
         :rtype: Player
         """
@@ -99,8 +94,7 @@ class VoiceClient(Client):
         """
         Returns user voice state.
 
-        :param user_id: The user id
-        :type user_id: Union[Snowflake, int]
+        :param Union[Snowflake, int] user_id: The user id
         :return: Founded user voice state else nothing
         :rtype: Optional[VoiceState]
         """
@@ -112,8 +106,7 @@ class VoiceClient(Client):
         """
         Returns guild voice states.
 
-        :param guild_id: The channel id
-        :type guild_id: Union[Snowflake, int]
+        :param Union[Snowflake, int] guild_id: The channel id
         :return: Founded channel voice states else nothing
         :rtype: Optional[List[VoiceState]]
         """
@@ -131,8 +124,7 @@ class VoiceClient(Client):
         """
         Returns channel voice states.
 
-        :param channel_id: The channel id
-        :type channel_id: Union[Snowflake, int]
+        :param Union[Snowflake, int] channel_id: The channel id
         :return: Founded channel voice states else nothing
         :rtype: Optional[List[VoiceState]]
         """
