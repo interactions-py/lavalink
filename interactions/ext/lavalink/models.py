@@ -60,7 +60,7 @@ class VoiceState(ClientSerializerMixin):
         """
         return self.channel_id is not None
 
-    async def mute_member(self, reason: Optional[str]) -> Member:
+    async def mute_member(self, reason: Optional[str] = None) -> Member:
         """
         Mutes the current member.
 
@@ -71,7 +71,7 @@ class VoiceState(ClientSerializerMixin):
         """
         return await self.member.modify(guild_id=int(self.guild_id), mute=True, reason=reason)
 
-    async def deafen_member(self, reason: Optional[str]) -> Member:
+    async def deafen_member(self, reason: Optional[str] = None) -> Member:
         """
         Deafens the current member.
 
@@ -82,7 +82,7 @@ class VoiceState(ClientSerializerMixin):
         """
         return await self.member.modify(guild_id=int(self.guild_id), deaf=True, reason=reason)
 
-    async def move_member(self, channel_id: int, *, reason: Optional[str]) -> Member:
+    async def move_member(self, channel_id: int, *, reason: Optional[str] = None) -> Member:
         """
         Moves the member to another channel.
 
