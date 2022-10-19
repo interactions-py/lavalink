@@ -16,7 +16,7 @@ class VoiceClient(Client):
     def __init__(self, token: str, **kwargs):
         super().__init__(token, **kwargs)
 
-        self._websocket = VoiceWebSocketClient(self, token, self._intents)
+        self._websocket = VoiceWebSocketClient(self, token, self._intents, shards=self._shards, presence=self._presence)
         self.lavalink_client: LavalinkClient = None
 
         self._websocket._dispatch.register(
