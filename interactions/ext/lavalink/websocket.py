@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING
 
-from interactions import OpCodeType, Storage, WebSocketClient, HTTPClient
+from interactions import HTTPClient, OpCodeType, Storage, WebSocketClient
 
 from .models import VoiceServer, VoiceState
 
