@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING
 
-from interactions import OpCodeType, Storage, WebSocketClient, HTTPClient
+from interactions import HTTPClient, OpCodeType, Storage, WebSocketClient
 
 from .models import VoiceServer, VoiceState
 
@@ -11,9 +11,9 @@ __all__ = ["VoiceWebSocketClient"]
 
 
 class VoiceWebSocketClient(WebSocketClient):
-    def __init__(self, bot_var: "VoiceClient", *args):
+    def __init__(self, bot_var: "VoiceClient", *args, **kwargs):
         self._bot_var: "VoiceClient" = bot_var
-        super().__init__(*args)
+        super().__init__(*args, **kwargs)
 
     async def run(self) -> None:
         """
