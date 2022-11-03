@@ -38,7 +38,7 @@ class VoiceState(ClientSerializerMixin):
     guild_id: Optional[Snowflake] = field(converter=Snowflake, default=None)
     channel_id: Optional[Snowflake] = field(converter=Snowflake, default=None)
     user_id: Snowflake = field(converter=Snowflake)
-    member: Optional[Member] = field(converter=Member, default=None)
+    member: Optional[Member] = field(converter=Member, default=None, add_client=True)
     session_id: str = field()
     deaf: bool = field()
     mute: bool = field()
