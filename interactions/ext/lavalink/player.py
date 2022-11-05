@@ -1,11 +1,19 @@
 from typing import List
 
 from lavalink import AudioTrack, DefaultPlayer
+from interactions import Client
 
-__all__ = ["Player"]
+__all__ = "Player"
+
+# TODO: Implement connect and disconnect methods for Player
 
 
 class Player(DefaultPlayer):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self._bot: Client = None
+
     async def search_youtube(self, query: str) -> List[AudioTrack]:
         res = await self.node.get_tracks(f"ytsearch: {query}")
         return res.tracks
