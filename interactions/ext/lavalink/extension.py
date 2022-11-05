@@ -1,8 +1,9 @@
 from functools import wraps
 from typing import Union
 
-from interactions import Client, Snowflake, Guild, OpCodeType, Channel
 from lavalink import Client as LavalinkClient
+
+from interactions import Channel, Client, Guild, OpCodeType, Snowflake
 
 from .player import Player
 
@@ -17,9 +18,7 @@ class Lavalink:
         if bot.me is not None:
             self.client = LavalinkClient(int(self._bot.me.id), player=Player)
 
-        self._bot._websocket._dispatch.register(
-            self.__raw_socket_create, "on_raw_socket_create"
-        )
+        self._bot._websocket._dispatch.register(self.__raw_socket_create, "on_raw_socket_create")
 
     @wraps(LavalinkClient.add_node)
     def add_node(self, *args, **kwargs):
@@ -30,7 +29,7 @@ class Lavalink:
 
     def get_player(self, guild_id: Union[Guild, Snowflake, str, int]) -> Player:
         """
-        :type Union[Guild, Snowflake, str, int] guild_id: The ID of the guild
+        :param Union[Guild, Snowflake, str, int] guild_id: The ID of the guild
         :return: Founded player
         :rtype: Player
         """
@@ -72,11 +71,11 @@ class Lavalink:
         """
         _guild_id = int(guild_id.id if isinstance(guild_id, Guild) else guild_id)
         _channel_id = int(channel_id.id if isinstance(channel_id, Channel) else channel_id)
-        await self._update_voice_state(_guild_id, channel_id, self_deaf, self_mute)
+        await self._update_voice_state(_guild_id, _channel_id, self_deaf, self_mute)
 
-        player = self.get_player(guild_id)
+        player = self.get_player(_guild_id)
         if player is None:
-            player = self.create_player(guild_id)
+            player = self.create_player(_guild_id)
         return player
 
     async def disconnect(self, guild_id: Union[Guild, Snowflake, str, int]):
@@ -85,8 +84,8 @@ class Lavalink:
         """
         _guild_id = int(guild_id.id if isinstance(guild_id, Guild) else guild_id)
 
-        await self._update_voice_state(int(guild_id))
-        await self.client.player_manager.destroy(int(guild_id))
+        await self._update_voice_state(_guild_id)
+        await self.client.player_manager.destroy(_guild_id)
 
     async def __raw_socket_create(self, name: str, data: dict):
         if name not in {"VOICE_STATE_UPDATE", "VOICE_SERVER_UPDATE"}:
