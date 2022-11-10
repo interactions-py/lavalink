@@ -71,7 +71,7 @@ class Lavalink:
         """
         _guild_id = int(guild_id.id if isinstance(guild_id, Guild) else guild_id)
         _channel_id = int(channel_id.id if isinstance(channel_id, Channel) else channel_id)
-        await self._update_voice_state(_guild_id, _channel_id, self_deaf, self_mute)
+        await self.__update_voice_state(_guild_id, _channel_id, self_deaf, self_mute)
 
         player = self.get_player(_guild_id)
         if player is None:
@@ -84,7 +84,7 @@ class Lavalink:
         """
         _guild_id = int(guild_id.id if isinstance(guild_id, Guild) else guild_id)
 
-        await self._update_voice_state(_guild_id)
+        await self.__update_voice_state(_guild_id)
         await self.client.player_manager.destroy(_guild_id)
 
     async def __raw_socket_create(self, name: str, data: dict):
@@ -94,7 +94,7 @@ class Lavalink:
         _data: dict = {"t": name, "d": data}
         await self.client.voice_update_handler(_data)
 
-    async def _update_voice_state(
+    async def __update_voice_state(
         self,
         guild_id: int,
         channel_id: int = None,
