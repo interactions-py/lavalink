@@ -88,27 +88,27 @@ def setup(client):
 ```
 
 ## Events
-To listen lavalink event you have to use `@listener` decorator.
+To listen lavalink event you have to use either `@bot.event` or `@extension_listener` decorator.
 
 ```python
-import lavalink
-from interactions.ext.lavalink import listener
+from interactions import Extension, extension_listener
 
+import lavalink
 
 # NOTE: Works only in extensions.
 class MusicExt(Extension):
-    ...
+    ... # Some your cool music commands
 
     # There are most useful events for you. You can use other events if you want it.
-    @listener()
+    @extension_listener()
     async def on_track_start(self, event: lavalink.TrackStartEvent):
         """Fires when track starts"""
 
-    @listener()
+    @extension_listener()
     async def on_track_end(self, event: lavalink.TrackEndEvent):
         """Fires when track ends"""
 
-    @listener()
+    @extension_listener()
     async def on_queue_end(self, event: lavalink.QueueEndEvent):
         """Fires when queue ends"""
 
@@ -116,5 +116,5 @@ class MusicExt(Extension):
 
 ## Documentation
 
-[lavalink.py documentation](https://lavalink.readthedocs.io/en/master/)  
+[lavalink.py documentation](https://lavalink.readthedocs.io/en/master/)
 [lavalink.py repository](https://github.com/Devoxin/Lavalink.py)

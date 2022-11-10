@@ -2,6 +2,7 @@ from functools import wraps
 from typing import Union
 
 from lavalink import Client as LavalinkClient
+from lavalink import Event as BaseLavalinkEvent
 
 from interactions import Channel, Client, Guild, OpCodeType, Snowflake
 
@@ -16,16 +17,18 @@ class Lavalink:
         self.client: LavalinkClient = None
 
         if bot.me is not None:
-            self.client = LavalinkClient(int(self._bot.me.id), player=Player)
+            self.__init_lavalink()
 
         self._bot._websocket._dispatch.register(self.__raw_socket_create, "raw_socket_create")
 
     @wraps(LavalinkClient.add_node)
     def add_node(self, *args, **kwargs):
         if self.client is None:
-            self.client = LavalinkClient(int(self._bot.me.id), player=Player)
-
         return self.client.add_node(*args, **kwargs)
+            self.__init_lavalink()
+    def __init_lavalink(self):
+        self.client = LavalinkClient(int(self._bot.me.id), player=Player)
+        self.client.add_event_hook(self.__lavalink_event)
 
     def get_player(self, guild_id: Union[Guild, Snowflake, str, int]) -> Player:
         """
@@ -86,6 +89,19 @@ class Lavalink:
 
         await self.__update_voice_state(_guild_id)
         await self.client.player_manager.destroy(_guild_id)
+
+    async def __lavalink_event(self, event: BaseLavalinkEvent):
+        event_name: str = self._get_event_name(event.__class__.__name__)
+
+        self._bot._websocket._dispatch.dispatch(event_name, event)
+
+    @staticmethod
+    def _get_event_name(event_name: str) -> str:
+        _event_name = event_name.removesuffix("Event")
+        for char in _event_name:
+            if char.isupper():
+                _event_name = _event_name.replace(char, f"_{char.lower()}", 1)
+        return f"on{_event_name}"
 
     async def __raw_socket_create(self, name: str, data: dict):
         if name not in {"VOICE_STATE_UPDATE", "VOICE_SERVER_UPDATE"}:
