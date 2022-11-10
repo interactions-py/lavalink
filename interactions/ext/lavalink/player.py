@@ -4,7 +4,7 @@ from lavalink import AudioTrack, DefaultPlayer
 
 from interactions import Client
 
-__all__ = ("Player", )
+__all__ = ("Player",)
 
 
 class Player(DefaultPlayer):
