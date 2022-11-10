@@ -18,7 +18,7 @@ class Lavalink:
         if bot.me is not None:
             self.client = LavalinkClient(int(self._bot.me.id), player=Player)
 
-        self._bot._websocket._dispatch.register(self.__raw_socket_create, "on_raw_socket_create")
+        self._bot._websocket._dispatch.register(self.__raw_socket_create, "raw_socket_create")
 
     # Fake async function
     @wraps(LavalinkClient.add_node)
