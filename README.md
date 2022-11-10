@@ -118,7 +118,3 @@ class MusicExt(Extension):
 
 [lavalink.py documentation](https://lavalink.readthedocs.io/en/master/)  
 [lavalink.py repository](https://github.com/Devoxin/Lavalink.py)
-
-## Credits
-
-Thanks EdVraz for `VoiceState` from [voice ext](https://github.com/interactions-py/voice)
