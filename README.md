@@ -95,7 +95,6 @@ from interactions import Extension, extension_listener
 
 import lavalink
 
-# NOTE: Works only in extensions.
 class MusicExt(Extension):
     ... # Some your cool music commands
 
