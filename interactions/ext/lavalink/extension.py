@@ -1,4 +1,3 @@
-from functools import wraps
 from typing import Union
 
 from lavalink import Client as LavalinkClient
@@ -21,11 +20,35 @@ class Lavalink:
 
         self._bot._websocket._dispatch.register(self.__raw_socket_create, "raw_socket_create")
 
-    @wraps(LavalinkClient.add_node)
-    def add_node(self, *args, **kwargs):
+    def add_node(
+        self,
+        host: str,
+        port: int,
+        password: str,
+        region: str,
+        resume_key: str = None,
+        resume_timeout: int = 60,
+        name: str = None,
+        reconnect_attempts: int = 3,
+        filters: bool = True,
+        ssl: bool = False,
+    ):
         if self.client is None:
-        return self.client.add_node(*args, **kwargs)
             self.__init_lavalink()
+
+        return self.client.add_node(
+            host=host,
+            port=port,
+            password=password,
+            region=region,
+            resume_key=resume_key,
+            resume_timeout=resume_timeout,
+            name=name,
+            reconnect_attempts=reconnect_attempts,
+            filters=filters,
+            ssl=ssl,
+        )
+
     def __init_lavalink(self):
         self.client = LavalinkClient(int(self._bot.me.id), player=Player)
         self.client.add_event_hook(self.__lavalink_event)
