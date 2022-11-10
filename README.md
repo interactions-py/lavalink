@@ -99,7 +99,7 @@ import lavalink
 class MusicExt(Extension):
     ... # Some your cool music commands
 
-    # There are most useful events for you. You can use other events if you want it.
+    # There are many useful events for you. You can use other events if you want it.
     @extension_listener()
     async def on_track_start(self, event: lavalink.TrackStartEvent):
         """Fires when track starts"""
@@ -113,6 +113,8 @@ class MusicExt(Extension):
         """Fires when queue ends"""
 
 ```
+
+More events you could find in the `lavalink.py` documentation
 
 ## Documentation
 
