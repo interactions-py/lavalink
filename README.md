@@ -116,5 +116,5 @@ class MusicExt(Extension):
 
 ## Documentation
 
-[lavalink.py documentation](https://lavalink.readthedocs.io/en/master/)
+[lavalink.py documentation](https://lavalink.readthedocs.io/en/master/) \
 [lavalink.py repository](https://github.com/Devoxin/Lavalink.py)
