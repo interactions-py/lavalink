@@ -114,12 +114,6 @@ class MusicExt(Extension):
 
 ```
 
-## New methods/properties for interactions.py library
-
-`Member.voice` - returns current member's `VoiceState`. It can be `None` if not cached.  
-`Channel.voice_states` - returns a list of voice states of the voice channel. Can be empty if not cached.  
-`Guild.voice_states` - returns a list of guild voice states. Can be empty if not cached.
-
 ## Documentation
 
 [lavalink.py documentation](https://lavalink.readthedocs.io/en/master/)  
