@@ -2,14 +2,17 @@
 
 ## Installation
 
+Download ext via `pip install --upgrade interactions-lavalink`
+
+## Configuring own lavalink server
+
 1. Download Java SE if you don't have it
 2. Download lavalink from [this repo](https://github.com/freyacodes/Lavalink)
 3. Configure `application.yml` file like [here](https://github.com/freyacodes/Lavalink/blob/master/LavalinkServer/application.yml.example)
-4. Download ext via `pip install interactions-lavalink`
+4. Run lavalink server via `java -jar Lavalink.jar` in same folder with `application.yml` file.
 
 ## Usage
 
-Run lavalink via `java -jar Lavalink.jar` in same folder with `application.yml` file.
 Create bot like example and run it.
 
 Main file:
