@@ -1,56 +1,61 @@
-import interactions
-from interactions.ext.lavalink import Player, VoiceClient, VoiceState
+from interactions import (
+    CommandContext,
+    Extension,
+    VoiceState,
+    extension_command,
+    extension_listener,
+    option,
+)
+from interactions.ext.lavalink import Lavalink
 
 
-class Music(interactions.Extension):
+class Music(Extension):
     def __init__(self, client):
-        self.client: VoiceClient = client
+        self.client = client
+        self.lavalink: Lavalink = None
 
-    @interactions.extension_listener()
+    @extension_listener()
     async def on_start(self):
-        self.client.lavalink_client.add_node("127.0.0.1", 43421, "your_password", "eu")
+        # Initialize lavalink instance
+        self.lavalink: Lavalink = Lavalink(self.client)
 
-    @interactions.extension_listener()
-    async def on_voice_state_update(self, before: VoiceState, after: VoiceState):
-        """
-        Disconnect if bot is alone
-        """
-        if before and not after.joined:
-            voice_states = self.client.get_channel_voice_states(before.channel_id)
-            if len(voice_states) == 1 and voice_states[0].user_id == self.client.me.id:
-                await self.client.disconnect(before.guild_id)
+        # Connect to lavalink server
+        self.lavalink.add_node("127.0.0.1", 43421, "your_password", "eu")
 
-    @interactions.extension_command()
-    @interactions.option()
-    async def play(self, ctx: interactions.CommandContext, query: str):
+    @extension_command()
+    @option()
+    async def play(self, ctx: CommandContext, query: str):
         await ctx.defer()
 
-        # NOTE: ctx.author.voice can be None if you ran a bot after joining the voice channel
-        voice: VoiceState = ctx.author.voice
-        if not voice or not voice.joined:
+        # Getting user's voice state
+        voice_state: VoiceState = ctx.author.voice_state
+        if not voice_state or not voice_state.joined:
             return await ctx.send("You're not connected to the voice channel!")
 
-        player: Player  # Typehint player variable to see their methods
-        if (player := ctx.guild.player) is None:
-            player = await voice.connect()
+        # Connecting to voice channel and getting player instance
+        player = await self.lavalink.connect(voice_state.guild_id, voice_state.channel_id)
 
+        # Getting tracks from youtube
         tracks = await player.search_youtube(query)
+        # Selecting first founded track
         track = tracks[0]
+        # Adding track to the queue
         player.add(requester=int(ctx.author.id), track=track)
 
+        # Check if already playing
         if player.is_playing:
             return await ctx.send(f"Added to queue: `{track.title}`")
+
+        # Starting playing track
         await player.play()
         await ctx.send(f"Now playing: `{track.title}`")
 
-    @interactions.extension_command()
-    async def leave(self, ctx: interactions.CommandContext):
-        await self.client.disconnect(ctx.guild_id)
+    @extension_command()
+    async def leave(self, ctx: CommandContext):
+        # Disconnect from voice channel and remove player
+        await self.lavalink.disconnect(ctx.guild_id)
 
-    @interactions.extension_command()
-    @interactions.option(channel_types=[interactions.ChannelType.GUILD_VOICE])
-    async def move_to(self, ctx: interactions.CommandContext, channel: interactions.Channel):
-        await self.client.connect(ctx.guild_id, channel.id)
+        await ctx.send("Disconnected", ephemeral=True)
 
 
 def setup(client):

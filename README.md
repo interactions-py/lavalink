@@ -2,126 +2,123 @@
 
 ## Installation
 
-1. Download Java if you don't have it
+Download ext via `pip install --upgrade interactions-lavalink`
+
+## Configuring own lavalink server
+
+1. Download Java SE if you don't have it
 2. Download lavalink from [this repo](https://github.com/freyacodes/Lavalink)
 3. Configure `application.yml` file like [here](https://github.com/freyacodes/Lavalink/blob/master/LavalinkServer/application.yml.example)
-4. Download ext via `pip install interactions-lavalink`
+4. Run lavalink server via `java -jar Lavalink.jar` in same folder with `application.yml` file.
 
 ## Usage
 
-Run lavalink via `java -jar Lavalink.jar` in same folder with `application.yml` file.
 Create bot like example and run it.
 
 Main file:
 ```python
-import interactions
-from interactions.ext.lavalink import VoiceState, VoiceClient
+from interactions import Client
 
-client = VoiceClient(...)
 
+# Creating bot variable
+client = Client(...)
+
+# Loading your extension
 client.load("exts.music")
 
+# Starting bot
 client.start()
 ```
 
 Extension file: `exts/music.py`
 ```python
-import interactions
-from interactions.ext.lavalink import VoiceClient, VoiceState, listener, Player
-import lavalink
+from interactions import Extension, extension_command, extension_listener, option, CommandContext, VoiceState
+from interactions.ext.lavalink import Lavalink
 
 
-class Music(interactions.Extension):
+class Music(Extension):
     def __init__(self, client):
-        self.client: VoiceClient = client
+        self.client = client
+        self.lavalink: Lavalink = None
 
-    @listener()
-    async def on_track_start(self, event: lavalink.TrackStartEvent):
-        """
-        Fires when track starts
-        """
-        print("STARTED", event.track)
-
-    @interactions.extension_listener()
+    @extension_listener()
     async def on_start(self):
-        self.client.lavalink_client.add_node("127.0.0.1", 43421, "your_password", "eu")
+        # Initialize lavalink instance
+        self.lavalink: Lavalink = Lavalink(self.client)
 
-    @interactions.extension_listener()
-    async def on_voice_state_update(self, before: VoiceState, after: VoiceState):
-        """
-        Disconnect if bot is alone
-        """
-        if before and not after.joined:
-            voice_states = self.client.get_channel_voice_states(before.channel_id)
-            if len(voice_states) == 1 and voice_states[0].user_id == self.client.me.id:
-                await self.client.disconnect(before.guild_id)
+        # Connect to lavalink server
+        self.lavalink.add_node("127.0.0.1", 43421, "your_password", "eu")
 
-    @interactions.extension_command()
-    @interactions.option()
-    async def play(self, ctx: interactions.CommandContext, query: str):
+    @extension_command()
+    @option()
+    async def play(self, ctx: CommandContext, query: str):
         await ctx.defer()
 
-        # NOTE: ctx.author.voice can be None if you ran a bot after joining the voice channel
-        voice: VoiceState = ctx.author.voice
-        if not voice or not voice.joined:
+        # Getting user's voice state
+        voice_state: VoiceState = ctx.author.voice_state
+        if not voice_state or not voice_state.joined:
             return await ctx.send("You're not connected to the voice channel!")
 
-        player: Player  # Typehint player variable to see their methods
-        if (player := ctx.guild.player) is None:
-            player = await voice.connect()
+        # Connecting to voice channel and getting player instance
+        player = await self.lavalink.connect(voice_state.guild_id, voice_state.channel_id)
 
+        # Getting tracks from youtube
         tracks = await player.search_youtube(query)
+        # Selecting first founded track
         track = tracks[0]
+        # Adding track to the queue
         player.add(requester=int(ctx.author.id), track=track)
 
+        # Check if already playing
         if player.is_playing:
             return await ctx.send(f"Added to queue: `{track.title}`")
+
+        # Starting playing track
         await player.play()
         await ctx.send(f"Now playing: `{track.title}`")
 
-    @interactions.extension_command()
-    async def leave(self, ctx: interactions.CommandContext):
-        await self.client.disconnect(ctx.guild_id)
+    @extension_command()
+    async def leave(self, ctx: CommandContext):
+        # Disconnect from voice channel and remove player
+        await self.lavalink.disconnect(ctx.guild_id)
+
+        await ctx.send("Disconnected", ephemeral=True)
+
+
+def setup(client):
+    Music(client)
+
 ```
 
 ## Events
-To listen lavalink event you have to use `@listener` decorator.
+To listen lavalink event you have to use either `@bot.event` or `@extension_listener` decorator.
 
 ```python
+from interactions import Extension, extension_listener
+
 import lavalink
-from interactions.ext.lavalink import listener
 
-
-# NOTE: Works only in extensions.
 class MusicExt(Extension):
-    ...
+    ... # Some your cool music commands
 
-    # There are most useful events for you. You can use other events if you want it.
-    @listener()
+    # There are many useful events for you. You can use other events if you want it.
+    @extension_listener()
     async def on_track_start(self, event: lavalink.TrackStartEvent):
         """Fires when track starts"""
 
-    @listener()
+    @extension_listener()
     async def on_track_end(self, event: lavalink.TrackEndEvent):
         """Fires when track ends"""
 
-    @listener()
+    @extension_listener()
     async def on_queue_end(self, event: lavalink.QueueEndEvent):
         """Fires when queue ends"""
 
 ```
 
-## New methods/properties for interactions.py library
-
-`Member.voice` - returns current member's `VoiceState`. It can be `None` if not cached.  
-`Channel.voice_states` - returns a list of voice states of the voice channel. Can be empty if not cached.  
-`Guild.voice_states` - returns a list of guild voice states. Can be empty if not cached.
+More events you could find in the `lavalink.py` documentation
 
 ## Documentation
 
-[lavalink.py documentation](https://lavalink.readthedocs.io/en/master/)  
+[lavalink.py documentation](https://lavalink.readthedocs.io/en/master/) \
 [lavalink.py repository](https://github.com/Devoxin/Lavalink.py)
-
-## Credits
-
-Thanks EdVraz for `VoiceState` from [voice ext](https://github.com/interactions-py/voice)
