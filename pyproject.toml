@@ -5,3 +5,28 @@ line-length = 100
 [tool.isort]
 profile = "black"
 line_length = 100
+
+[tool.poetry]
+name = "interactions-lavalink"
+version = "1.0.0"
+description = "Lavalink support for interactions.py"
+authors = ["Damego <damego.dev@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+packages = [{include = "interactions_lavalink"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+tomli = "^2.0.1"
+interactions = {git = "https://github.com/interactions-py/interactions.py.git", rev = "5.x"} # TODO: Replace with stable release later
+lavalink = ">=4.0.0,<5.0.0"
+
+[tool.poetry.group.dev.dependencies]
+pre-commit = "^3.0.4"
+
+[build-system]
+requires = [
+    "setuptools",
+    "tomli",
+]
+build-backend = "setuptools.build_meta"

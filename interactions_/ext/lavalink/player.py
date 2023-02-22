@@ -11,7 +11,7 @@ class Player(DefaultPlayer):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self._bot: Client = None
+        self._bot: Client | None = None
 
     async def search_youtube(self, query: str) -> List[AudioTrack]:
         res = await self.node.get_tracks(f"ytsearch: {query}")

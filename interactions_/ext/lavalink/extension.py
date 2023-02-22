@@ -1,24 +1,34 @@
 from typing import Union
 
 from lavalink import Client as LavalinkClient
-from lavalink import Event as BaseLavalinkEvent
+import lavalink.events
 
-from interactions import Channel, Client, Guild, OpCodeType, Snowflake
+from interactions import Client, Snowflake_Type, to_snowflake
+from interactions.api.events.base import RawGatewayEvent
 
 from .player import Player
+from . import events
 
-__all__ = ("Lavalink", "setup")
+__all__ = ("Lavalink", )
 
 
 class Lavalink:
     def __init__(self, bot: Client):
         self._bot: Client = bot
-        self.client: LavalinkClient = None
+        self.client: LavalinkClient | None = None
 
-        if bot.me is not None:
-            self.__init_lavalink()
+        self._bot.listen()(self.__on_raw_voice_state_update)
+        self._bot.listen()(self.__on_raw_voice_server_update)
 
-        self._bot._websocket._dispatch.register(self.__raw_socket_create, "raw_socket_create")
+    async def __on_raw_voice_state_update(self, event: RawGatewayEvent):
+        await self.client.voice_update_handler(
+            {"t": "VOICE_STATE_UPDATE", "d": event.data}
+        )
+
+    async def __on_raw_voice_server_update(self, event: RawGatewayEvent):
+        await self.client.voice_update_handler(
+            {"t": "VOICE_SERVER_UPDATE", "d": event.data}
+        )
 
     def add_node(
         self,
@@ -50,38 +60,34 @@ class Lavalink:
         )
 
     def __init_lavalink(self):
-        self.client = LavalinkClient(int(self._bot.me.id), player=Player)
-        self.client.add_event_hook(self.__lavalink_event)
+        self.client = LavalinkClient(int(self._bot.user.id), player=Player)
+        self.client.add_event_hook(self._dispatch_lavalink_event)
 
-    def get_player(self, guild_id: Union[Guild, Snowflake, str, int]) -> Player:
+    def get_player(self, guild_id: Snowflake_Type) -> Player | None:
         """
-        :param Union[Guild, Snowflake, str, int] guild_id: The ID of the guild
-        :return: Founded player
-        :rtype: Player
+        Gets guild's current player.
+
+        :param Snowflake_Type guild_id: The ID of the guild
+        :return: Player, if any.
         """
-        _guild_id = int(guild_id.id if isinstance(guild_id, Guild) else guild_id)
+        return self.client.player_manager.get(to_snowflake(guild_id))
 
-        player: Player = self.client.player_manager.get(_guild_id)
-
-        return player
-
-    def create_player(self, guild_id: Union[Guild, Snowflake, str, int]) -> Player:
+    def create_player(self, guild_id: Snowflake_Type) -> Player:
         """
-        :param Union[Guild, Snowflake, str, int] guild_id: The ID of the guild
+        Creates a new player for the guild
+
+        :param Snowflake_Type guild_id: The ID of the guild
         :return: Created player
-        :rtype: Player
         """
-        _guild_id = int(guild_id.id if isinstance(guild_id, Guild) else guild_id)
-
-        player = self.client.player_manager.create(_guild_id)
+        player = self.client.player_manager.create(to_snowflake(guild_id))
         player._bot = self._bot
 
-        return player
+        return player  # type: ignore
 
     async def connect(
         self,
-        guild_id: Union[Guild, Snowflake, str, int],
-        channel_id: Union[Channel, Snowflake, str, int],
+        guild_id: Snowflake_Type,
+        channel_id: Snowflake_Type,
         self_deaf: bool = False,
         self_mute: bool = False,
     ) -> Player:
@@ -95,36 +101,31 @@ class Lavalink:
         :return: Created guild player.
         :rtype: Player
         """
-        _guild_id = int(guild_id.id if isinstance(guild_id, Guild) else guild_id)
-        _channel_id = int(channel_id.id if isinstance(channel_id, Channel) else channel_id)
-        await self.__update_voice_state(_guild_id, _channel_id, self_deaf, self_mute)
+        _guild_id = to_snowflake(guild_id)
 
-        player = self.get_player(_guild_id)
-        if player is None:
-            player = self.create_player(_guild_id)
-        return player
+        websocket = self._bot.get_guild_websocket(_guild_id)
+        await websocket.voice_state_update(_guild_id, to_snowflake(channel_id), muted=self_mute, deafened=self_deaf)
 
-    async def disconnect(self, guild_id: Union[Guild, Snowflake, str, int]):
+        return self.get_player(_guild_id) or self.create_player(_guild_id)
+
+    async def disconnect(self, guild_id: Snowflake_Type):
         """
         :param Union[Snowflake, int, str] guild_id: The guild id to disconnect from.
         """
-        _guild_id = int(guild_id.id if isinstance(guild_id, Guild) else guild_id)
+        _guild_id = to_snowflake(guild_id)
+        websocket = self._bot.get_guild_websocket(_guild_id)
+        await websocket.voice_state_update(_guild_id, None)  # type: ignore
 
-        await self.__update_voice_state(_guild_id)
         await self.client.player_manager.destroy(_guild_id)
 
-    async def __lavalink_event(self, event: BaseLavalinkEvent):
-        event_name: str = self._get_event_name(event.__class__.__name__)
+    async def _dispatch_lavalink_event(self, event: lavalink.events.Event):
+        # TODO: uhh
+        match event:
+            case lavalink.events.NodeConnectedEvent():
+                print(1)
+                _event = events.NodeConnected(event.node)
 
-        self._bot._websocket._dispatch.dispatch(event_name, event)
-
-    @staticmethod
-    def _get_event_name(event_name: str) -> str:
-        _event_name = event_name.removesuffix("Event")
-        for char in _event_name:
-            if char.isupper():
-                _event_name = _event_name.replace(char, f"_{char.lower()}", 1)
-        return f"on{_event_name}"
+        self._bot.dispatch(_event)
 
     async def __raw_socket_create(self, name: str, data: dict):
         if name not in {"VOICE_STATE_UPDATE", "VOICE_SERVER_UPDATE"}:
@@ -162,7 +163,3 @@ class Lavalink:
             payload["d"]["self_mute"] = self_mute
 
         await self._bot._websocket._send_packet(payload)
-
-
-def setup(bot: Client):
-    return Lavalink(bot)
