@@ -18,8 +18,8 @@ packages = [{include = "interactions_lavalink"}]
 [tool.poetry.dependencies]
 python = "^3.10"
 tomli = "^2.0.1"
-interactions = {git = "https://github.com/interactions-py/interactions.py.git", rev = "5.x"} # TODO: Replace with stable release later
-lavalink = ">=4.0.0,<5.0.0"
+lavalink = "^4.0.0"
+interactions-py = "^5.0.0"
 
 [tool.poetry.group.dev.dependencies]
 pre-commit = "^3.0.4"
