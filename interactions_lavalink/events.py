@@ -1,21 +1,33 @@
 import attrs
+from interactions.api.events.base import BaseEvent
 from lavalink.events import (
     Event,
-    TrackStartEvent,
-    TrackStuckEvent,
-    TrackExceptionEvent,
-    TrackEndEvent,
-    TrackLoadFailedEvent,
-    QueueEndEvent,
-    PlayerUpdateEvent,
+    NodeChangedEvent,
     NodeConnectedEvent,
     NodeDisconnectedEvent,
-    NodeChangedEvent,
+    PlayerUpdateEvent,
+    QueueEndEvent,
+    TrackEndEvent,
+    TrackExceptionEvent,
+    TrackLoadFailedEvent,
+    TrackStartEvent,
+    TrackStuckEvent,
     WebSocketClosedEvent,
 )
-from interactions.api.events.base import BaseEvent
 
-__all__ = ("TrackStart", "TrackStuck", "TrackException", "TrackEnd", "TrackLoadFailed", "QueueEnd", "PlayerUpdate", "NodeConnected", "NodeDisconnected", "NodeChanged", "WebSocketClosed")
+__all__ = (
+    "TrackStart",
+    "TrackStuck",
+    "TrackException",
+    "TrackEnd",
+    "TrackLoadFailed",
+    "QueueEnd",
+    "PlayerUpdate",
+    "NodeConnected",
+    "NodeDisconnected",
+    "NodeChanged",
+    "WebSocketClosed",
+)
 
 
 @attrs.define(eq=False, order=False, hash=False, slots=False, kw_only=False)
@@ -79,4 +91,3 @@ class NodeChanged(CursedLavalinkEvent, NodeChangedEvent):
 @attrs.define(eq=False, order=False, hash=False, slots=False, kw_only=False)
 class WebSocketClosed(CursedLavalinkEvent, WebSocketClosedEvent):
     ...
-

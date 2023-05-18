@@ -1,15 +1,12 @@
-from typing import Union
-
-from lavalink import Client as LavalinkClient
 import lavalink.events
-
 from interactions import Client, Snowflake_Type, to_snowflake
 from interactions.api.events.base import RawGatewayEvent
+from lavalink import Client as LavalinkClient
 
-from .player import Player
 from . import events
+from .player import Player
 
-__all__ = ("Lavalink", )
+__all__ = ("Lavalink",)
 
 
 class Lavalink:
@@ -22,14 +19,10 @@ class Lavalink:
         self._bot.listen()(self.__on_raw_voice_server_update)
 
     async def __on_raw_voice_state_update(self, event: RawGatewayEvent):
-        await self.client.voice_update_handler(
-            {"t": "VOICE_STATE_UPDATE", "d": event.data}
-        )
+        await self.client.voice_update_handler({"t": "VOICE_STATE_UPDATE", "d": event.data})
 
     async def __on_raw_voice_server_update(self, event: RawGatewayEvent):
-        await self.client.voice_update_handler(
-            {"t": "VOICE_SERVER_UPDATE", "d": event.data}
-        )
+        await self.client.voice_update_handler({"t": "VOICE_SERVER_UPDATE", "d": event.data})
 
     def add_node(
         self,
@@ -95,8 +88,8 @@ class Lavalink:
         """
         Connects to voice channel and creates player.
 
-        :param Union[Snowflake, int, str] guild_id: The guild id to connect.
-        :param Union[Snowflake, int, str] channel_id: The channel id to connect.
+        :param Snowflake_Type guild_id: The guild id to connect.
+        :param Snowflake_Type channel_id: The channel id to connect.
         :param bool self_deaf: Whether bot is self deafened
         :param bool self_mute: Whether bot is self muted
         :return: Created guild player.
@@ -105,13 +98,15 @@ class Lavalink:
         _guild_id = to_snowflake(guild_id)
 
         websocket = self._bot.get_guild_websocket(_guild_id)
-        await websocket.voice_state_update(_guild_id, to_snowflake(channel_id), muted=self_mute, deafened=self_deaf)
+        await websocket.voice_state_update(
+            _guild_id, to_snowflake(channel_id), muted=self_mute, deafened=self_deaf
+        )
 
         return self.get_player(_guild_id) or self.create_player(_guild_id)
 
     async def disconnect(self, guild_id: Snowflake_Type):
         """
-        :param Union[Snowflake, int, str] guild_id: The guild id to disconnect from.
+        :param Snowflake_Type guild_id: The guild id to disconnect from.
         """
         _guild_id = to_snowflake(guild_id)
         websocket = self._bot.get_guild_websocket(_guild_id)

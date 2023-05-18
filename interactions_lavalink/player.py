@@ -1,8 +1,7 @@
 from typing import List
 
-from lavalink import AudioTrack, DefaultPlayer
-
 from interactions import Client
+from lavalink import AudioTrack, DefaultPlayer
 
 __all__ = ("Player",)
 
