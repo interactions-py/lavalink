@@ -17,6 +17,7 @@ class Lavalink:
         self._bot: Client = bot
         self.client: LavalinkClient | None = None
 
+        # Not an Extension so listen decorator can't be used
         self._bot.listen()(self.__on_raw_voice_state_update)
         self._bot.listen()(self.__on_raw_voice_server_update)
 
@@ -119,13 +120,9 @@ class Lavalink:
         await self.client.player_manager.destroy(_guild_id)
 
     async def _dispatch_lavalink_event(self, event: lavalink.events.Event):
-        # TODO: uhh
-        match event:
-            case lavalink.events.NodeConnectedEvent():
-                print(1)
-                _event = events.NodeConnected(event.node)
-
-        self._bot.dispatch(_event)
+        event_cls = getattr(events, event.__class__.__name__.removesuffix("Event"))
+        event_ins = event_cls(event)
+        self._bot.dispatch(event_ins)
 
     async def __raw_socket_create(self, name: str, data: dict):
         if name not in {"VOICE_STATE_UPDATE", "VOICE_SERVER_UPDATE"}:
@@ -133,33 +130,3 @@ class Lavalink:
 
         _data: dict = {"t": name, "d": data}
         await self.client.voice_update_handler(_data)
-
-    async def __update_voice_state(
-        self,
-        guild_id: int,
-        channel_id: int = None,
-        self_deaf: bool = None,
-        self_mute: bool = None,
-    ):
-        """
-        Sends VOICE_STATE packet to websocket.
-
-        :param int guild_id: The guild id.
-        :param int channel_id: The channel id.
-        :param bool self_deaf: Whether bot is self deafened
-        :param bool self_mute: Whether bot is self muted
-        """
-        payload = {
-            "op": OpCodeType.VOICE_STATE,
-            "d": {
-                "guild_id": str(guild_id),
-                "channel_id": str(channel_id) if channel_id is not None else None,
-            },
-        }
-
-        if self_deaf is not None:
-            payload["d"]["self_deaf"] = self_deaf
-        if self_mute is not None:
-            payload["d"]["self_mute"] = self_mute
-
-        await self._bot._websocket._send_packet(payload)
