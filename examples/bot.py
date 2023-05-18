@@ -1,8 +1,6 @@
-from interactions import Intents
-from interactions.ext.lavalink import VoiceClient
+from interactions import Client
 
-client = VoiceClient("TOKEN", intents=Intents.DEFAULT)
+client = Client()
 
-client.load("exts.music")
-
-client.start()
+client.load_extension("exts.music")
+client.start("TOKEN")
