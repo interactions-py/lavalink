@@ -14,7 +14,7 @@ setup(
     author_email="damego.dev@gmail.com",
     description=pyproject["tool"]["poetry"]["description"],
     include_package_data=True,
-    install_requires=["interactions.py>=5.0.0,<6.0.0", "lavalink>=4.0.0,<5.0.0"],
+    install_requires=["interactions.py>=5.0.0,<6.0.0", "lavalink>=5.0.0,<6.0.0"],
     license=pyproject["tool"]["poetry"]["license"],
     long_description=(Path(__file__).parent / "README.md").read_text(),
     long_description_content_type="text/markdown",

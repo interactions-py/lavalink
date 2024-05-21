@@ -18,7 +18,7 @@ packages = [{include = "interactions_lavalink"}]
 [tool.poetry.dependencies]
 python = "^3.10"
 tomli = "^2.0.1"
-lavalink = "^4.0.0"
+lavalink = "^5.0.0"
 interactions-py = "^5.0.0"
 
 [tool.poetry.group.dev.dependencies]

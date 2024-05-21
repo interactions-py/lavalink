@@ -2,8 +2,10 @@ import attrs
 from interactions.api.events.base import BaseEvent
 from lavalink.events import (
     Event,
+    IncomingWebSocketMessage,
     NodeChangedEvent,
     NodeConnectedEvent,
+    NodeReadyEvent,
     NodeDisconnectedEvent,
     PlayerUpdateEvent,
     QueueEndEvent,
@@ -36,6 +38,10 @@ class CursedLavalinkEvent(BaseEvent):
 
     def __getattr__(self, name: str):
         return getattr(self.lavalink_event, name)
+
+@attrs.define(eq=False, order=False, hash=False, slots=False, kw_only=False)
+class IncomingWebSocketMessage(CursedLavalinkEvent, IncomingWebSocketMessage):
+    ...
 
 
 @attrs.define(eq=False, order=False, hash=False, slots=False, kw_only=False)
@@ -75,6 +81,10 @@ class PlayerUpdate(CursedLavalinkEvent, PlayerUpdateEvent):
 
 @attrs.define(eq=False, order=False, hash=False, slots=False, kw_only=False)
 class NodeConnected(CursedLavalinkEvent, NodeConnectedEvent):
+    ...
+
+@attrs.define(eq=False, order=False, hash=False, slots=False, kw_only=False)
+class NodeReady(CursedLavalinkEvent, NodeReadyEvent):
     ...
 
 

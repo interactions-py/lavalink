@@ -30,11 +30,7 @@ class Lavalink:
         port: int,
         password: str,
         region: str,
-        resume_key: str = None,
-        resume_timeout: int = 60,
         name: str = None,
-        reconnect_attempts: int = 3,
-        filters: bool = True,
         ssl: bool = False,
     ):
         if self.client is None:
@@ -45,11 +41,7 @@ class Lavalink:
             port=port,
             password=password,
             region=region,
-            resume_key=resume_key,
-            resume_timeout=resume_timeout,
             name=name,
-            reconnect_attempts=reconnect_attempts,
-            filters=filters,
             ssl=ssl,
         )
 
